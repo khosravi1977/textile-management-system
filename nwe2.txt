@@ -1,0 +1,5875 @@
+
+
+Private Sub Button2_Click()
+ Dim ws As Worksheet
+    Dim findValue As String
+    Dim findRange As Range
+    Dim cell As Range
+
+
+    Dim rowNumber As Long
+    Dim lastRow As Long
+    Dim targetRange As Range
+
+
+       Dim i As Long
+    Dim rowIndex As Integer
+    Dim colIndex As Integer
+    Dim labels(1 To 3, 1 To 4) As String ' ماتريس نام ليبل‌ها
+    Dim lbl As Object
+
+    Set ws = Sheet1
+
+    ' غيرفعال کردن محافظت از شيت (اگر قبلاً محافظت شده است)
+    ws.Unprotect Password:="YourPassword" ' اگر از پسورد استفاده کرده‌ايد، آن را وارد کنيد
+
+ '88888 چک کردن عددي بودن وروديها  888888
+
+
+    ' بررسي اينکه مقادير حتماً عدد باشند
+    If Not IsNumericValue(TextBox6.Value) Then
+        MsgBox "مقدار <<متراژ>> عدد نمي‌باشد", vbExclamation
+        TextBox6.SetFocus
+        Exit Sub
+    End If
+    If Not IsNumericValue(TextBox7.Value) Then
+        MsgBox "مقدار <<ماشين>> عدد نمي‌باشد", vbExclamation
+        TextBox7.SetFocus
+        Exit Sub
+    End If
+    If Not IsNumericValue(TextBox8.Value) Then
+    TextBox8.SetFocus
+        MsgBox "مقدار <<وزن>> عدد نمي‌باشد", vbExclamation
+        Exit Sub
+    End If
+
+
+
+    findValue = TextBox5.Value
+
+    ' پيدا کردن سطري که مقدار در TextBox5 را دارد
+    Set findRange = ws.Range("A:A").Find(What:=findValue, LookIn:=xlValues, LookAt:=xlWhole)
+
+     If Not findRange Is Nothing Then
+        rowNumber = findRange.Row
+
+        ' باز کردن قفل رديف انتخاب‌شده
+        Set targetRange = ws.Rows(rowNumber)
+        targetRange.Locked = False
+
+
+        With findRange
+            .Offset(0, 1).Value = TextBox6.Value ' ذخيره مقدار (متراژ)TextBox6 در ستون B
+            .Offset(0, 2).Value = TextBox7.Value ' ذخيره مقدار(ماشين) TextBox7 در ستون C
+            .Offset(0, 3).Value = TextBox8.Value ' ذخيره مقدار(وزن) TextBox8 در ستون D
+
+            .Offset(0, 8).Value = TextBox22.Value ' ذخيره مقدار (متراژ)TextBox6 در ستون h
+            .Offset(0, 9).Value = ComboBox64.text ' ذخيره مقدار(ماشين) TextBox7 در ستون i
+            .Offset(0, 10).Value = ComboBox63.text ' ذخيره مقدار(وزن) TextBox8 در ستون j
+
+            .Offset(0, 10).Value = TextBox16.Value ' ذخيره مقدار(همبافت چله) TextBox16 در ستون k
+            .Offset(0, 11).Value = TextBox17.Value ' ذخيره مقدار(همبافت پود) TextBox17 در ستون l
+            .Offset(0, 12).Value = TextBox18.Value ' ذخيره مقدار(شماره چله) TextBox18 در ستون m
+
+
+        End With
+
+
+
+        ' قفل کردن دوباره رديف انتخاب‌شده
+        targetRange.Locked = True
+
+        ' محافظت از شيت
+        ws.Protect Password:="YourPassword" ' اگر نمي‌خواهيد پسورد بدهيد، اين خط را حذف کنيد
+
+
+        ' پيام موفقيت
+        MsgBox "تغييرات با موفقيت اعمال و رديف قفل شد!", vbInformation
+
+
+              labels(1, 1) = "LabelRow1Col1": labels(1, 2) = "LabelRow1Col2": labels(1, 3) = "LabelRow1Col3": labels(1, 4) = "LabelRow1Col4"
+              labels(2, 1) = "LabelRow2Col1": labels(2, 2) = "LabelRow2Col2": labels(2, 3) = "LabelRow2Col3": labels(2, 4) = "LabelRow2Col4"
+              labels(3, 1) = "LabelRow3Col1": labels(3, 2) = "LabelRow3Col2": labels(3, 3) = "LabelRow3Col3": labels(3, 4) = "LabelRow3Col4"
+
+
+       ' به‌روزرساني سه سطر آخر در ليبل‌ها
+    rowIndex = 1
+    For i = lastRow To Application.Max(lastRow - 2, 1) Step -1
+        For colIndex = 1 To 4
+            On Error Resume Next
+            Set lbl = Me.controls(labels(rowIndex, colIndex))
+            If Not lbl Is Nothing Then
+                Select Case colIndex
+                    Case 1: lbl.Caption = ws.Cells(i, 1).Value ' کد
+                    Case 2: lbl.Caption = ws.Cells(i, 2).Value ' متراژ
+                    Case 3: lbl.Caption = ws.Cells(i, 3).Value ' ماشين
+                    Case 4: lbl.Caption = ws.Cells(i, 4).Value ' وزن
+
+'                    Case 5: lbl.Caption = ws.Cells(i, 11).value 'همبافت چله
+'                    Case 6: lbl.Caption = ws.Cells(i, 12).value 'همبافت پود
+'                    Case 7: lbl.Caption = ws.Cells(i, 15).value 'شماره چله
+'
+
+                End Select
+            End If
+            On Error GoTo 0
+        Next colIndex
+        rowIndex = rowIndex + 1
+    Next i
+
+    Else
+        MsgBox "مقدار يافت نشد", vbExclamation
+    End If
+
+    '33333333333333333333333333333333333333333333333333333333333333
+    ' مقدار گزاري در sheet2  براي چاپ
+
+
+     Sheet2.Range("b2").Value = TextBox5.Value 'کد در شيت 2 از ويرايش اطلاعات
+     Sheet2.Range("b3").Value = TextBox6.Value 'متراز در شيت 2 از ويرايش اطلاعات
+    Sheet2.Range("b5").Value = TextBox18.Value 'شماره چله در شيت 2 از ويرايش اطلاعات
+     Sheet2.Range("b4").Value = TextBox8.Value 'وزن در شيت 2 از ويرايش اطلاعات
+     Sheet2.Range("b7").Value = TextBox16.Value 'همبافت چله در شيت 2 از ويرايش اطلاعات
+     Sheet2.Range("b6").Value = TextBox17.Value 'همبافت پود در شيت 2 از ويرايش اطلاعات
+
+     Sheet2.Range("a1").Value = ComboBox66.Value
+
+     Sheet2.Range("b8").Value = Sheet2.Range("b2").Value
+    Sheet2.Range("A9").Value = "*" & Sheet2.Range("b2").Value & "*"
+    '*******************************************
+
+    ' Sheet2.Range("A7").value = "چله  همبافت"
+
+    'If CheckBox4.value = True Then
+    ' Sheet2.Range("A7").value = "***چله غير همبافت***"
+   'Sheet2.Activate
+  '  Range("A7").value = "****چله غير همبافت****"
+
+
+  '  End If
+    '22222222222222222222222222222222222222222222
+
+   '  Sheet2.Range("A8").value = "پود  همبافت"
+
+  '  If CheckBox5.value = True Then
+  '   Sheet2.Range("A8").value = "*** پود غير همبافت ***"
+   '  Sheet2.Activate
+   ' Range("A8").value = "**** پود غير همبافت ****"
+
+   ' End If
+''''''''''''''''''''''''''''''''''''''''''
+ Sheets("Sheet2").Select
+    Range("A1:B9").Select
+    ActiveWindow.SelectedSheets.PrintOut From:=1, To:=32766, Copies:=1, _
+        Collate:=True, IgnorePrintAreas:=False
+
+     ActiveWorkbook.Save
+
+End Sub
+
+
+Private Sub cbutton1_Click()
+Dim i As Integer
+Dim j As Integer
+Dim A As Integer
+Dim b As Integer
+Sheet11.Select
+  For i = 3 To 200
+  If Sheet11.Range("b" & i).Value = "" Then
+
+
+            Sheet11.Range("c" & i).Value = ComboBox50.text ' شماره ماشين
+            Sheet11.Range("d" & i).Value = ComboBox51.text ' همبافت پود
+            Sheet11.Range("f" & i).Value = ComboBox52.text ' شيفت
+
+            Sheet11.Range("e" & i).Value = TB1.text 'وزن پود
+            Sheet11.Range("b" & i).Value = TB19.text ' تاريخ
+          Sheet11.Range("g" & i).Value = (Now()) ' تاريخ روز
+
+        '   Sheet11.Range("g" & i).value = Slash(Shamsi()) ' تاريخ روز
+
+            Exit For
+         End If
+      Next i
+ ComboBox50.text = ""
+ ComboBox51.text = ""
+ ComboBox52.text = ""
+ TB19.text = ""
+ TB1.text = ""
+ MsgBox "اطلاعات ثبت شد!", vbInformation
+ActiveWorkbook.Save
+End Sub
+
+Private Sub ComboBox10_Change()
+
+End Sub
+
+Private Sub ComboBox19_Change()
+
+    Dim i As Integer
+    Dim o As Integer
+    Dim f As Range
+     Label92.Visible = False
+           '444444444444444444444444444444444444444444444
+           lastRow = Sheet12.Cells(Sheet12.Rows.Count, "g").End(xlUp).Row
+          For i = lastRow To 1 Step -1
+
+             If ComboBox19.text = Sheet3.Range("h" & i).Value Then
+                Label92.Visible = True
+                End If
+
+             If ComboBox19.text = Sheet12.Range("g" & i).Value Then
+
+
+                        ComboBox21.text = Sheet12.Range("f" & i).Value
+                        TextBox44.text = Sheet12.Range("h" & i).Value
+                        ComboBox14.text = Sheet12.Range("i" & i).Value
+                        Exit For
+             End If
+
+           Next i
+'        For o = 3 To lastRow
+'            If ComboBox19.Text = Sheet12.Range("h" & o).value Then
+'                Label75.Visible = True
+'                End If
+'         Next o
+
+
+            '777777777777777777777777777777777777777777777
+End Sub
+
+Private Sub ComboBox56_BeforeUpdate(ByVal Cancel As MSForms.ReturnBoolean)
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim i As Integer
+    ' تعيين شيت فعال
+    Set ws = Sheet1
+    lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
+
+    For i = lastRow To 2 Step -1
+        Debug.Print "ComboBox: '" & ComboBox56.Value & "' | Cell C" & i & ": '" & ws.Range("C" & i).Value & "'"
+        If CStr(ComboBox56.Value) = CStr(ws.Range("C" & i).Value) Then
+            ComboBox58.Value = ws.Range("M" & i).Value
+            Debug.Print "Match found at row " & i
+            Exit For
+        End If
+    Next i
+End Sub
+
+Private Sub ComboBox56_Change()
+
+End Sub
+
+Private Sub ComboBox57_BeforeUpdate(ByVal Cancel As MSForms.ReturnBoolean)
+Dim ws As Worksheet
+Dim lastRow As Long
+Dim i As Long
+
+Set ws = Sheet22
+lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
+
+For i = lastRow To 2 Step -1 ' از آخر به اول، فرض بر اينکه رديف 1 هدر است
+    If ws.Cells(i, "A").Value = ComboBox57.Value Then
+        ComboBox68.Value = ws.Cells(i, "B").Value
+        Label147.Visible = True
+        Label146.Caption = ws.Cells(i, "G").Value
+        Exit For ' چون اولين مقدار از آخر کافي است
+    End If
+Next i
+
+End Sub
+
+Private Sub ComboBox57_Change()
+
+End Sub
+
+Private Sub ComboBox59_BeforeUpdate(ByVal Cancel As MSForms.ReturnBoolean)
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim i As Integer
+    ' تعيين شيت فعال
+    Set ws = Sheet1
+    lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
+
+    For i = lastRow To 2 Step -1
+        Debug.Print "ComboBox: '" & ComboBox56.Value & "' | Cell C" & i & ": '" & ws.Range("C" & i).Value & "'"
+        If CStr(ComboBox59.Value) = CStr(ws.Range("C" & i).Value) Then
+            ComboBox61.Value = ws.Range("M" & i).Value
+            Debug.Print "Match found at row " & i
+            Exit For
+        End If
+    Next i
+End Sub
+
+Private Sub ComboBox60_Change()
+Dim ws As Worksheet
+Dim lastRow As Long
+Dim i As Long
+
+Set ws = Sheet7
+lastRow = ws.Cells(ws.Rows.Count, "G").End(xlUp).Row
+
+For i = lastRow To 2 Step -1 ' از آخر به اول، فرض بر اينکه رديف 1 هدر است
+    If ws.Cells(i, "G").Value = ComboBox60.Value Then
+        ComboBox69.Value = ws.Cells(i, "D").Value
+        Exit For ' چون اولين مقدار از آخر کافي است
+    End If
+Next i
+End Sub
+
+Private Sub ComboBox64_Change()
+
+End Sub
+
+
+
+Private Sub ComboBox65_Change()
+
+End Sub
+
+Private Sub CommandButton_Factor_Click()
+    Dim ws As Worksheet
+    Dim i As Long, j As Long
+    Dim lastRow As Long
+    Dim totalMeterage As Double, totalWeight As Double
+    Dim invoiceNumber As String, customerName As String, invoiceDate As String
+    Dim headers() As String
+    Dim pdfPath As String
+    Dim fDialog As FileDialog
+    Dim targetRange As Range
+    Dim rowNumber As Long
+    Dim wslock As Worksheet
+ '================باز کردن قفل ======================
+
+    ' تنظيم شيت
+    Set wslock = Sheet1 ' نام شيت را تغيير دهيد
+
+    ' غيرفعال کردن محافظت از شيت (اگر قبلاً محافظت شده است)
+    wslock.Unprotect Password:="YourPassword" ' اگر از پسورد استفاده کرده‌ايد، آن را وارد کنيد
+
+    ' باز کردن قفل تمام سلول‌هاي شيت
+    wslock.Cells.Locked = False
+
+    ' پيدا کردن آخرين سطر پر در ستون A
+    lastRow = wslock.Cells(wslock.Rows.Count, 1).End(xlUp).Row
+
+    ' پيام موفقيت
+   ' MsgBox "قفل تمام سطرهاي باز شدند!", vbInformation
+ '==========================================================
+   i = 0
+    Dim findValue As String
+    Dim foundCell As Range
+   'Dim i As Long
+    Dim listCount As Long
+
+    ' شيت مورد نظر
+    Set ws = Sheet1
+
+    ' بررسي آيا ليست باکس داراي آيتم است (بيش از 1 چون سطر اول سرستون است)
+    listCount = Me.ListBoxResults.listCount
+    If listCount <= 1 Then
+        MsgBox "ليست باکس حاوي داده نيست.", vbExclamation, "خطا"
+        Exit Sub
+    End If
+
+    ' پردازش سطرهاي ليست باکس از سطر دوم به بعد
+    For i = 1 To listCount - 1  ' شروع از 1 به جاي 0 براي رد کردن سطر اول
+        ' مقدار جستجو (کد از ستون اول ليست باکس)
+        findValue = Me.ListBoxResults.List(i, 0)
+
+        ' بررسي عددي بودن مقدار (اگر نياز است)
+        If Not IsNumeric(findValue) Then
+            MsgBox "مقدار کد در سطر " & i + 1 & " عددي نيست: " & findValue, vbExclamation
+            Exit For
+        End If
+
+        ' جستجو در ستون A شيت اکسل
+        Set foundCell = ws.Columns("A").Find(What:=findValue, LookIn:=xlValues, LookAt:=xlWhole)
+
+        If Not foundCell Is Nothing Then
+            ' به روزرساني مقادير در شيت اکسل
+            ws.Cells(foundCell.Row, "O").Value = Me.ComboBox74.Value  ' مشتري
+            ws.Cells(foundCell.Row, "Q").Value = Me.TextBox51.Value   ' تاريخ
+            ws.Cells(foundCell.Row, "N").Value = Me.TextBox50.Value   ' شماره فاکتور
+        Else
+            MsgBox "کد " & findValue & " پيدا نشد.", vbExclamation, "جستجو"
+        End If
+    Next i
+
+    MsgBox "به روزرساني اطلاعات براي " & (listCount - 1) & " آيتم با موفقيت انجام شد.", vbInformation, "تکميل شد"
+'End Sub
+ i = 0
+ '===========================================================
+    ' بررسي وجود داده در ليست‌باکس
+'    If Me.ListBoxResults.listCount <= 1 Then
+'        MsgBox "لطفا ابتدا جستجو انجام شود و داده‌اي در ليست وجود داشته باشد.", vbExclamation
+'        Exit Sub
+'    End If
+
+    Application.ScreenUpdating = False
+
+    ' ايجاد يا انتخاب شيت ثابت براي فاکتور
+    On Error Resume Next
+    Set ws = Sheet13
+    If ws Is Nothing Then
+        Set ws = Worksheets.add
+        ws.name = "فاکتور"
+    End If
+    On Error GoTo 0
+
+    ' پاک کردن محتواي قبلي شيت
+    ws.Cells.Clear
+
+    ' گرفتن اطلاعات از فرم
+    invoiceNumber = Me.TextBox50.Value
+    customerName = Me.ComboBox74.text
+    invoiceDate = Me.TextBox51.Value
+
+    ' گرفتن سرستون‌ها از TextBox1 (فرض بر جداشدن با کاما)
+    headers = Split(Me.TextBox1.Value, ",")
+
+    ' نوشتن اطلاعات بالاي فاکتور
+    With ws
+        .Cells(1, 1).Value = "تاريخ:"
+        .Cells(1, 2).Value = invoiceDate
+        .Cells(2, 1).Value = "نام مشتري:"
+        .Cells(2, 2).Value = customerName
+        .Cells(3, 1).Value = "شماره فاکتور:"
+        .Cells(3, 2).Value = invoiceNumber
+
+        ' نوشتن سرستون‌ها
+        For i = 0 To UBound(headers)
+            .Cells(5, i + 1).Value = Trim(headers(i))
+            .Cells(5, i + 1).Font.Bold = True
+        Next i
+
+        ' انتقال داده‌ها از ListBox به شيت
+        For i = 0 To Me.ListBoxResults.listCount - 1
+            For j = 0 To Me.ListBoxResults.ColumnCount - 1
+                .Cells(i + 6, j + 1).Value = Me.ListBoxResults.List(i, j)
+            Next j
+            ' محاسبه جمع متراژ و وزن (ستون دوم و سوم)
+            If IsNumeric(Me.ListBoxResults.List(i, 1)) Then totalMeterage = totalMeterage + CDbl(Me.ListBoxResults.List(i, 1))
+            If IsNumeric(Me.ListBoxResults.List(i, 2)) Then totalWeight = totalWeight + CDbl(Me.ListBoxResults.List(i, 2))
+        Next i
+
+        ' نوشتن جمع
+        lastRow = 6 + Me.ListBoxResults.listCount
+        .Cells(lastRow, 1).Value = "جمع کل:"
+        .Cells(lastRow, 2).Value = totalMeterage
+        .Cells(lastRow, 3).Value = totalWeight
+        .Range(.Cells(lastRow, 1), .Cells(lastRow, 3)).Font.Bold = True
+
+        ' فرمت‌بندي جدول
+       ' .Range(A1, G100).Borders.LineStyle = xlContinuous
+
+        '.Columns.AutoFit
+    End With
+    ' تنظيم محدوده A1 تا G100
+    Set rng = ws.Range("A1:G100")
+
+    ' حذف تمام خطوط موجود در محدوده
+    rng.Borders.LineStyle = xlNone
+
+'
+    ' تنظيم خصوصيات فونت
+    With rng.Font
+        .name = "Arial"      ' نام فونت
+        .Size = 14           ' سايز فونت
+        .Bold = False        ' غير پررنگ
+        .Italic = False      ' غير ايتاليک
+        .Color = RGB(0, 0, 0) ' رنگ سياه
+    End With
+
+     ' بررسي هر سلول و خط کشيدن دور سلول‌هاي داراي اطلاعات
+    For Each cell In rng
+        If Not IsEmpty(cell.Value) Then
+            With cell.Borders
+                .LineStyle = xlContinuous ' خط پيوسته
+                .Color = RGB(0, 0, 0)    ' رنگ سياه
+                .weight = xlThin         ' ضخامت خط
+            End With
+        End If
+    Next cell
+
+    ' تنظيم راست به چپ بودن متن (براي فارسي)
+    rng.HorizontalAlignment = xlRight
+    rng.VerticalAlignment = xlCenter
+
+'    ' تنظيم راست به چپ بودن متن (براي فارسي)
+'    rng.HorizontalAlignment = xlRight
+ ' تنظيم خودکار اندازه سطرها و ستون‌ها بر اساس محتوا
+    rng.Columns.AutoFit
+    rng.Rows.AutoFit
+
+
+    ' باز کردن کادر ذخيره PDF
+
+    Set fDialog = Application.FileDialog(msoFileDialogSaveAs)
+    With fDialog
+        .title = "ذخيره به عنوان PDF"
+        .InitialFileName = ThisWorkbook.Path & "\Factor_" & invoiceNumber & ".pdf"
+        If .Show = -1 Then
+            pdfPath = .SelectedItems(1)
+            If LCase(Right(pdfPath, 4)) <> ".pdf" Then pdfPath = pdfPath & ".pdf"
+        Else
+            Application.ScreenUpdating = True
+            Exit Sub
+        End If
+    End With
+
+    ' ذخيره به PDF
+   ' ذخيره به PDF
+ws.ExportAsFixedFormat Type:=xlTypePDF, Filename:=pdfPath, Quality:=xlQualityStandard
+
+' چاپ PDF فقط اگر CheckBox6 فعال باشد
+If CheckBox6.Value = True Then
+    On Error Resume Next
+    Shell "cmd /c start acrord32.exe /p /h """ & pdfPath & """", vbHide
+    On Error GoTo 0
+End If
+
+
+    ws.ExportAsFixedFormat Type:=xlTypePDF, Filename:=pdfPath, Quality:=xlQualityStandard
+
+    ' چاپ PDF (در صورت وجود آکروبات)
+'    On Error Resume Next
+'    Shell "cmd /c start acrord32.exe /p /h """ & pdfPath & """", vbHide
+'    On Error GoTo 0
+
+    Application.ScreenUpdating = True
+    MsgBox "فاکتور ذخيره و چاپ شد.", vbInformation
+End Sub
+
+
+
+Private Sub CommandButton1_Click()
+    Dim ws As Worksheet
+    Dim ws2 As Worksheet
+    Dim dataWorkbook As Workbook
+    Dim dataWs As Worksheet
+    Dim nextRow As Long
+    Dim currentCode As Long
+    Dim findValue As String
+    Dim findRange As Range
+    Dim rowNumber As Long
+    Dim lastRow As Long
+    Dim dataLastRow As Long
+    Dim dataFilePath As String
+    Dim lastRow19 As Long
+    Dim targetRange As Range
+    Dim i As Long
+    Dim rowIndex As Integer
+    Dim colIndex As Integer
+    Dim labels(1 To 3, 1 To 4) As String
+    Dim lbl As Object
+
+    ' غيرفعال‌کردن موقت ويژگي‌هاي اکسل براي عملکرد سريعتر
+    Application.ScreenUpdating = False
+    Application.Calculation = xlCalculationManual
+    Application.EnableEvents = False
+
+    On Error GoTo ErrorHandler
+
+    ' انتخاب شيت‌ها
+    Set ws = ThisWorkbook.Sheets(1)
+    Set ws2 = ThisWorkbook.Sheets(2)
+
+    ' ---------- 1. لغو تمام فيلترهاي اعمال شده ----------
+    If ws.FilterMode Then
+        ws.AutoFilterMode = False
+    End If
+
+    ' ---------- 2. بررسي کد تکراري در ستون A ----------
+    If IsNumeric(TextBox1.Value) Then
+        currentCode = CLng(TextBox1.Value)
+    Else
+        MsgBox "لطفا يک کد معتبر وارد کنيد", vbExclamation
+        Exit Sub
+    End If
+
+    ' جستجوي کد تکراري در ستون A
+    Dim dupCell As Range
+    Set dupCell = ws.Columns(1).Find(What:=currentCode, LookIn:=xlValues, LookAt:=xlWhole)
+
+    If Not dupCell Is Nothing Then
+        MsgBox "کد وارد شده تکراري است!" & vbCrLf & _
+               "کد " & currentCode & " قبلاً در سطر " & dupCell.Row & " ثبت شده است.", _
+               vbExclamation, "خطاي کد تکراري"
+        TextBox1.SetFocus
+        Exit Sub
+    End If
+
+    ' ---------- بررسي مقادير ورودي ----------
+    If TextBox2.Value = "" Then
+        MsgBox "مقدار متراژ خالي است", vbExclamation
+        TextBox2.SetFocus
+        Exit Sub
+    End If
+
+    If TextBox3.Value = "" Then
+        MsgBox "مقدار ماشين خالي است", vbExclamation
+        TextBox3.SetFocus
+        Exit Sub
+    End If
+
+    If TextBox4.Value = "" Then
+        MsgBox "مقدار وزن خالي است", vbExclamation
+        TextBox4.SetFocus
+        Exit Sub
+    End If
+
+    If TextBox10.Value = "" Then
+        MsgBox "مقدار همبافت چله خالي است", vbExclamation
+        TextBox10.SetFocus
+        Exit Sub
+    End If
+
+    If TextBox12.Value = "" Then
+        MsgBox "مقدار شماره چله خالي است", vbExclamation
+        TextBox12.SetFocus
+        Exit Sub
+    End If
+
+    If ComboBox62.Value = "" Then
+        MsgBox "مقدار همبافت پود خالي است", vbExclamation
+        ComboBox62.SetFocus
+        Exit Sub
+    End If
+
+    If ComboBox67.Value = "" Then
+        MsgBox "مقدار نوع جنس خالي است", vbExclamation
+        ComboBox67.SetFocus
+        Exit Sub
+    End If
+
+    ' بررسي عددي بودن مقادير
+    If Not IsNumeric(TextBox2.Value) Then
+        MsgBox "مقدار متراژ بايد عددي باشد", vbExclamation
+        TextBox2.SetFocus
+        Exit Sub
+    End If
+
+    If Not IsNumeric(TextBox3.Value) Then
+        MsgBox "مقدار ماشين بايد عددي باشد", vbExclamation
+        TextBox3.SetFocus
+        Exit Sub
+    End If
+
+    If Not IsNumeric(TextBox4.Value) Then
+        MsgBox "مقدار وزن بايد عددي باشد", vbExclamation
+        TextBox4.SetFocus
+        Exit Sub
+    End If
+
+    ' يافتن آخرين سطر خالي
+    lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row + 1
+
+    ' ---------- ذخيره داده‌ها در شيت 1 ----------
+    With ws
+        .Cells(lastRow, 1).Value = currentCode
+        .Cells(lastRow, 2).Value = TextBox2.Value
+        .Cells(lastRow, 3).Value = TextBox3.Value
+        .Cells(lastRow, 4).Value = TextBox4.Value
+        .Cells(lastRow, 5).Value = Slash(Shamsi()) ' تاريخ شمسي
+        .Cells(lastRow, 6).Value = Time ' زمان
+        .Cells(lastRow, 7).Value = Label6.Caption
+        .Cells(lastRow, 8).Value = TextBox9.Value
+        .Cells(lastRow, 9).Value = ComboBox1.Value
+        .Cells(lastRow, 10).Value = ComboBox67.Value
+        .Cells(lastRow, 11).Value = TextBox10.Value
+        .Cells(lastRow, 12).Value = ComboBox62.Value
+        .Cells(lastRow, 13).Value = TextBox12.Value
+    End With
+
+    ' ---------- ذخيره در شيت 2 ----------
+    With ws2
+        .Cells(2, 2).Value = currentCode
+        .Cells(3, 2).Value = TextBox2.Value
+        .Cells(4, 2).Value = TextBox4.Value
+        .Cells(5, 2).Value = TextBox12.Value
+        .Cells(6, 2).Value = ComboBox62.Value
+        .Cells(7, 2).Value = TextBox10.Value
+        .Cells(1, 1).Value = ComboBox65.Value
+        .Cells(9, 1).Value = "*" & currentCode & "*"
+    End With
+
+    ' ---------- چاپ اگر چک‌بکس تيک نخورده ----------
+    If Not CheckBox1.Value Then
+        ws2.PrintOut Copies:=1, Collate:=True
+    End If
+
+    ' ---------- ذخيره در فايل data.xlsx ----------
+    dataFilePath = ThisWorkbook.Path & "\data.xlsx"
+
+    If Dir(dataFilePath) <> "" Then
+        Set dataWorkbook = Workbooks.Open(dataFilePath)
+        Set dataWs = dataWorkbook.Sheets("Sheet1")
+
+        dataLastRow = dataWs.Cells(dataWs.Rows.Count, 1).End(xlUp).Row + 1
+        ws.Rows(lastRow).Copy Destination:=dataWs.Rows(dataLastRow)
+
+        dataWorkbook.Close SaveChanges:=True
+    Else
+        MsgBox "فايل data.xlsx در مسير يافت نشد!", vbExclamation
+    End If
+
+    ' ---------- اعمال تنظيمات چک‌بکس‌ها ----------
+    With ws2
+        .Range("A7").Value = "چله همبافت"
+        .Range("A8").Value = "پود همبافت"
+
+        If CheckBox2.Value = True Then
+            ws.Cells(lastRow, 11).Value = "***چله غير همبافت***"
+            .Range("A7").Value = "****چله غير همبافت****"
+        End If
+
+        If CheckBox3.Value = True Then
+            ws.Cells(lastRow, 12).Value = "***پود غير همبافت***"
+            .Range("A8").Value = "****پود غير همبافت****"
+        End If
+    End With
+
+    ' ---------- قفل کردن رديف جديد ----------
+    ws.Unprotect Password:="YourPassword"
+
+    lastRow19 = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+    Set targetRange = ws.Range("A" & lastRow19 & ":N" & lastRow19)
+    targetRange.Locked = True
+
+    ws.Protect Password:="YourPassword"
+
+    ' ---------- به‌روزرساني ليبل‌ها ----------
+    labels(1, 1) = "LabelRow1Col1": labels(1, 2) = "LabelRow1Col2"
+    labels(1, 3) = "LabelRow1Col3": labels(1, 4) = "LabelRow1Col4"
+    labels(2, 1) = "LabelRow2Col1": labels(2, 2) = "LabelRow2Col2"
+    labels(2, 3) = "LabelRow2Col3": labels(2, 4) = "LabelRow2Col4"
+    labels(3, 1) = "LabelRow3Col1": labels(3, 2) = "LabelRow3Col2"
+    labels(3, 3) = "LabelRow3Col3": labels(3, 4) = "LabelRow3Col4"
+
+    ' پاک کردن متن ليبل‌ها
+    For rowIndex = 1 To 3
+        For colIndex = 1 To 4
+            On Error Resume Next
+            Set lbl = Me.controls(labels(rowIndex, colIndex))
+            If Not lbl Is Nothing Then lbl.Caption = ""
+            On Error GoTo 0
+        Next colIndex
+    Next rowIndex
+
+    ' به‌روزرساني سه سطر آخر
+    rowIndex = 1
+    For i = lastRow To Application.Max(lastRow - 2, 1) Step -1
+        For colIndex = 1 To 4
+            On Error Resume Next
+            Set lbl = Me.controls(labels(rowIndex, colIndex))
+            If Not lbl Is Nothing Then
+                Select Case colIndex
+                    Case 1: lbl.Caption = ws.Cells(i, 1).Value
+                    Case 2: lbl.Caption = ws.Cells(i, 2).Value
+                    Case 3: lbl.Caption = ws.Cells(i, 3).Value
+                    Case 4: lbl.Caption = ws.Cells(i, 4).Value
+                End Select
+            End If
+            On Error GoTo 0
+        Next colIndex
+        rowIndex = rowIndex + 1
+    Next i
+
+    ' ---------- پاک کردن و تنظيم مجدد فرم ----------
+    TextBox1.Value = currentCode + 1
+    TextBox2.Value = ""
+    TextBox3.Value = ""
+    TextBox4.Value = ""
+    TextBox9.Value = ""
+    TextBox10.Value = ""
+    TextBox12.Value = ""
+    ComboBox1.Value = ""
+    ComboBox62.Value = ""
+    ComboBox1.text = "نام بافنده"
+
+    TextBox2.SetFocus
+
+    ' ---------- اجراي توابع کمکي ----------
+    Calc_Warp_Data
+    Load_Machine_Values_From_Sheet14
+
+    ' ---------- ذخيره فايل جاري ----------
+    ThisWorkbook.Save
+
+    ' ---------- فعال‌سازي مجدد ويژگي‌هاي اکسل ----------
+    Application.ScreenUpdating = True
+    Application.Calculation = xlCalculationAutomatic
+    Application.EnableEvents = True
+
+    MsgBox "اطلاعات با موفقيت ذخيره شد.", vbInformation
+
+    Exit Sub
+
+ErrorHandler:
+    Application.ScreenUpdating = True
+    Application.Calculation = xlCalculationAutomatic
+    Application.EnableEvents = True
+
+    MsgBox "خطا در ذخيره اطلاعات:" & vbCrLf & Err.Description, vbCritical
+End Sub
+
+
+
+
+Private Sub CommandButton10_Click()
+   Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim targetRange As Range
+    Dim i As Long
+
+    ' تنظيم شيت
+    Set ws = ThisWorkbook.Sheets("Sheet1") ' نام شيت را تغيير دهيد
+
+    ' غيرفعال کردن محافظت از شيت (اگر قبلاً محافظت شده است)
+    ws.Unprotect Password:="YourPassword" ' اگر از پسورد استفاده کرده‌ايد، آن را وارد کنيد
+
+    ' باز کردن قفل تمام سلول‌هاي شيت
+    ws.Cells.Locked = False
+
+    ' پيدا کردن آخرين سطر پر در ستون A
+    lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+
+    ' پيام موفقيت
+    MsgBox "قفل تمام سطرهاي باز شدند!", vbInformation
+End Sub
+
+Private Sub CommandButton11_Click()
+   Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim targetRange As Range
+    Dim i As Long
+
+    ' تنظيم شيت
+    Set ws = ThisWorkbook.Sheets("Sheet1") ' نام شيت را تغيير دهيد
+
+    ' غيرفعال کردن محافظت از شيت (اگر قبلاً محافظت شده است)
+    ws.Unprotect Password:="YourPassword" ' اگر از پسورد استفاده کرده‌ايد، آن را وارد کنيد
+
+    ' باز کردن قفل تمام سلول‌هاي شيت
+    ws.Cells.Locked = False
+
+    ' پيدا کردن آخرين سطر پر در ستون A
+    lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+
+    ' حلقه براي بررسي تمام سطرهاي پر
+    For i = 1 To lastRow
+        ' تعيين محدوده A تا N در سطر فعلي
+        Set targetRange = ws.Range("A" & i & ":N" & i)
+
+        ' اگر سطر خالي نباشد، آن را قفل کنيد
+        If Application.WorksheetFunction.CountA(targetRange) > 0 Then
+            targetRange.Locked = True
+        End If
+    Next i
+
+    ' محافظت از شيت (بدون UserInterfaceOnly)
+    ws.Protect Password:="YourPassword" ' اگر نمي‌خواهيد پسورد بدهيد، اين خط را حذف کنيد
+
+    ' پيام موفقيت
+    MsgBox "تمام سطرهاي داراي مقدار در محدوده A:N قفل شدند!", vbInformation
+End Sub
+
+
+
+Private Sub CommandButton13_Click()
+ Dim wsSource As Worksheet
+
+    Dim lastRow As Long
+    Dim i As Long
+
+    ' تعريف شيت مبدا و مقصد
+    Set wsSource = Sheet1
+
+
+    ' پيدا کردن آخرين سطر داراي داده در شيت مبدا
+    lastRow = wsSource.Cells(wsSource.Rows.Count, "AB").End(xlUp).Row + 1
+
+    ' حلقه از سطر 3 تا آخرين سطر داراي داده
+
+
+        ' بررسي آيا سلول در ستون K (ستون 11) مقداري دارد
+        If wsSource.Range("AB" & lastRow).Value = "" Then
+            wsSource.Range("AB" & lastRow).Value = TextBox29.text
+             MsgBox "مشتري جديد ثبت شد", vbExclamation
+
+        End If
+End Sub
+
+Private Sub CommandButton14_Click()
+    Dim wsSource As Worksheet
+
+    Dim lastRow As Long
+    Dim i As Long
+
+    ' تعريف شيت مبدا و مقصد
+    Set wsSource = Sheet1
+
+
+    ' پيدا کردن آخرين سطر داراي داده در شيت مبدا
+    lastRow = wsSource.Cells(wsSource.Rows.Count, "AG").End(xlUp).Row + 1
+
+    ' حلقه از سطر 3 تا آخرين سطر داراي داده
+
+
+        ' بررسي آيا سلول در ستون K (ستون 11) مقداري دارد
+        If wsSource.Range("AG" & lastRow).Value = "" Then
+            wsSource.Range("AG" & lastRow).Value = TextBox30.text
+             MsgBox "کالاي جديد ثبت شد", vbExclamation
+
+        End If
+
+End Sub
+
+Private Sub CommandButton15_Click()
+    Dim ws1 As Worksheet
+
+    ' تعريف شيت مبدا و مقصد
+    Set ws1 = Sheet1
+    ws1.Range("AN2").Value = TextBox27.text
+    ws1.Range("AO2").Value = TextBox28.text
+
+    ws1.Range("AN3").Value = TextBox56.text
+    ws1.Range("AO3").Value = TextBox57.text
+
+    ws1.Range("AN4").Value = TextBox58.text
+    ws1.Range("AO4").Value = TextBox59.text
+
+    ws1.Range("AN5").Value = TextBox60.text
+    ws1.Range("AO5").Value = TextBox61.text
+
+    ws1.Range("AN6").Value = TextBox62.text
+    ws1.Range("AO6").Value = TextBox63.text
+
+    ws1.Range("AN7").Value = TextBox64.text
+    ws1.Range("AO7").Value = TextBox65.text
+
+    ws1.Range("AN8").Value = TextBox66.text
+    ws1.Range("AO8").Value = TextBox67.text
+
+    ws1.Range("AN9").Value = TextBox68.text
+    ws1.Range("AO9").Value = TextBox69.text
+
+    ws1.Range("AN10").Value = TextBox70.text
+    ws1.Range("AO10").Value = TextBox71.text
+
+    ws1.Range("AN11").Value = TextBox72.text
+    ws1.Range("AO11").Value = TextBox73.text
+
+    ws1.Range("AN12").Value = TextBox74.text
+    ws1.Range("AO12").Value = TextBox75.text
+
+    ws1.Range("AN13").Value = TextBox76.text
+    ws1.Range("AO13").Value = TextBox77.text
+
+    ws1.Range("AN14").Value = TextBox78.text
+    ws1.Range("AO14").Value = TextBox79.text
+
+    ws1.Range("AN15").Value = TextBox80.text
+    ws1.Range("AO15").Value = TextBox81.text
+
+    ws1.Range("AN16").Value = TextBox82.text
+    ws1.Range("AO16").Value = TextBox83.text
+
+    MsgBox "اطلاعات ثبت شد!", vbInformation
+
+
+
+End Sub
+
+Private Sub CommandButton16_Click()
+Dim ws7 As Worksheet, ws20 As Worksheet
+    Dim lastRow7 As Long
+    Dim dict As Object
+        Dim key As Variant
+  Dim i As Integer
+
+    Dim tbl As ListObject
+    Dim newRow As ListRow
+    Dim parts() As String
+    Dim k As Variant
+ Set ws7 = Sheet7
+    Set ws20 = Sheet22
+    Set dict = CreateObject("Scripting.Dictionary")
+
+    ' گرفتن رفرنس جدول nakh
+    Set tbl = ws20.ListObjects("nakh")
+
+    ' حذف تمام رديف‌هاي قبلي جدول
+    On Error Resume Next
+    Do While tbl.ListRows.Count > 0
+        tbl.ListRows(1).Delete
+    Loop
+    On Error GoTo 0
+
+    ' پيمايش سطرهاي شيت 7 و ساخت ديکشنري
+    lastRow7 = ws7.Cells(ws7.Rows.Count, "C").End(xlUp).Row
+
+    For i = 3 To lastRow7
+        If Trim(ws7.Cells(i, "C").Value) <> "" And _
+           Trim(ws7.Cells(i, "D").Value) <> "" And _
+           Trim(ws7.Cells(i, "G").Value) <> "" Then
+
+            key = ws7.Cells(i, "C").Value & "|" & ws7.Cells(i, "D").Value & "|" & ws7.Cells(i, "G").Value
+
+            If dict.Exists(key) Then
+                dict(key) = dict(key) + ws7.Cells(i, "F").Value
+            Else
+                dict.add key, ws7.Cells(i, "F").Value
+            End If
+        End If
+    Next i
+
+    ' درج در جدول nakh
+    For Each k In dict.Keys
+        parts = Split(k, "|")
+        Set newRow = tbl.ListRows.add
+        newRow.Range(1, 1).Value = parts(2) ' G ? A
+        newRow.Range(1, 2).Value = parts(1) ' D ? B
+        newRow.Range(1, 3).Value = parts(0) ' C ? C
+        newRow.Range(1, 4).Value = dict(k)  ' جمع F ? D
+    Next k
+
+    MsgBox "اطلاعات با موفقيت در جدول nakh ثبت شد.", vbInformation
+End Sub
+
+'Option Explicit'
+' مسير پيش‌فرض براي ذخيره بک‌آپ
+'Const BACKUP_PATH As String = "C:\Excel_VBA_Backups\"
+
+Sub BackupVBAComponentsOnly()
+    On Error GoTo ErrorHandler
+
+    Dim timestamp As String
+    Dim backupFolder As String
+
+    ' ايجاد پوشه بک‌آپ در صورت عدم وجود
+    If Dir(BACKUP_PATH, vbDirectory) = "" Then
+        MkDir BACKUP_PATH
+    End If
+
+    ' دريافت timestamp براي نام پوشه
+    timestamp = Format(Now, "yyyy-mm-dd_hh-mm-ss")
+    backupFolder = BACKUP_PATH & "VBA_Backup_" & timestamp & "\"
+
+    ' ايجاد پوشه براي اين بک‌آپ
+    If Dir(backupFolder, vbDirectory) = "" Then
+        MkDir backupFolder
+    End If
+
+    ' بررسي فعال بودن دسترسي به VBA Project
+    If Not VBAProjectAccessEnabled() Then
+        MsgBox "دسترسي به پروژه VBA فعال نيست." & vbCrLf & _
+               "لطفاً از Trust Center اين تنظيم را فعال کنيد.", vbExclamation
+        Exit Sub
+    End If
+
+    ' Export تمام کامپوننت‌هاي VBA
+    ExportVBAComponents backupFolder
+
+    MsgBox "بک‌آپ ماژول‌ها و فرم‌هاي VBA با موفقيت در مسير زير ذخيره شد:" & _
+           vbCrLf & backupFolder, vbInformation, "تهيه بک‌آپ موفق"
+
+    Exit Sub
+
+ErrorHandler:
+    MsgBox "خطا در تهيه بک‌آپ:" & vbCrLf & Err.Description, vbCritical
+End Sub
+
+' تابع Export کامپوننت‌هاي VBA
+Sub ExportVBAComponents(backupFolder As String)
+    On Error Resume Next
+
+    Dim vbComp As Object
+    Dim ext As String
+    Dim exportPath As String
+
+    For Each vbComp In ThisWorkbook.VBProject.VBComponents
+        Select Case vbComp.Type
+            Case 1: ext = ".bas"    ' ماژول استاندارد
+            Case 2: ext = ".cls"    ' کلاس ماژول
+            Case 3: ext = ".frm"    ' فرم کاربري
+            Case 100: ext = ".cls"  ' کدهاي شيت‌ها (اين شيت‌ها را هم export مي‌کنيم)
+            Case Else: ext = ""
+        End Select
+
+        If ext <> "" Then
+            exportPath = backupFolder & vbComp.name & ext
+            vbComp.Export exportPath
+
+            If Err.Number <> 0 Then
+                Debug.Print "خطا در Export کامپوننت " & vbComp.name & ": " & Err.Description
+                Err.Clear
+            End If
+        End If
+    Next vbComp
+
+    On Error GoTo 0
+End Sub
+
+' تابع بررسي فعال بودن دسترسي به VBA Project
+Function VBAProjectAccessEnabled() As Boolean
+    On Error Resume Next
+    Dim testProj As Object
+    Set testProj = ThisWorkbook.VBProject
+    VBAProjectAccessEnabled = (Err.Number = 0)
+    On Error GoTo 0
+End Function
+
+' تابع بازگرداني بک‌آپ VBA
+Sub RestoreVBAComponents()
+    On Error GoTo ErrorHandler
+
+    Dim backupFolder As Variant
+    Dim file As String
+
+    ' نمايش ديالوگ انتخاب پوشه
+    backupFolder = BrowseForFolder("لطفاً پوشه حاوي فايل‌هاي VBA را انتخاب کنيد")
+
+    If backupFolder = "" Then Exit Sub
+
+    ' اضافه کردن backslash به انتهاي مسير اگر وجود ندارد
+    If Right(backupFolder, 1) <> "\" Then
+        backupFolder = backupFolder & "\"
+    End If
+
+    ' بررسي فعال بودن دسترسي به VBA Project
+    If Not VBAProjectAccessEnabled() Then
+        MsgBox "دسترسي به پروژه VBA فعال نيست." & vbCrLf & _
+               "لطفاً از Trust Center اين تنظيم را فعال کنيد.", vbExclamation
+        Exit Sub
+    End If
+
+    ' حذف ماژول‌هاي موجود (به جز ThisWorkbook و شيت‌ها)
+    DeleteExistingVBAComponents
+
+    ' Import فايل‌هاي VBA
+    file = Dir(backupFolder & "*.*")
+    Do While file <> ""
+        ImportVBAFile backupFolder & file
+        file = Dir()
+    Loop
+
+    MsgBox "بازگرداني ماژول‌ها و فرم‌هاي VBA با موفقيت انجام شد.", vbInformation
+
+    Exit Sub
+
+ErrorHandler:
+    MsgBox "خطا در بازگرداني بک‌آپ:" & vbCrLf & Err.Description, vbCritical
+End Sub
+
+' تابع حذف ماژول‌هاي موجود
+Sub DeleteExistingVBAComponents()
+    On Error Resume Next
+
+    Dim vbComp As Object
+
+    For Each vbComp In ThisWorkbook.VBProject.VBComponents
+        If vbComp.Type <> 100 And vbComp.name <> "ThisWorkbook" Then ' 100 = vbext_ct_Document
+            ThisWorkbook.VBProject.VBComponents.Remove vbComp
+        End If
+    Next vbComp
+
+    On Error GoTo 0
+End Sub
+
+' تابع Import فايل VBA
+Sub ImportVBAFile(filePath As String)
+    On Error Resume Next
+
+    Dim ext As String
+    ext = LCase(Right(filePath, 4))
+
+    Select Case ext
+        Case ".bas", ".cls", ".frm"
+            ThisWorkbook.VBProject.VBComponents.Import filePath
+            If Err.Number <> 0 Then
+                Debug.Print "خطا در Import فايل " & filePath & ": " & Err.Description
+                Err.Clear
+            End If
+    End Select
+
+    On Error GoTo 0
+End Sub
+
+' تابع نمايش ديالوگ انتخاب پوشه
+Function BrowseForFolder(title As String) As String
+    Dim shellApp As Object
+    Set shellApp = CreateObject("Shell.Application")
+
+    On Error Resume Next
+    BrowseForFolder = shellApp.BrowseForFolder(0, title, 0).Self.Path
+    On Error GoTo 0
+
+    Set shellApp = Nothing
+End Function
+
+
+
+Private Sub CommandButton17_Click()
+
+Dim f As Integer
+Dim A As Integer
+Dim b As Integer
+Dim lastRow As Integer
+'===================
+Dim ws7 As Worksheet, ws20 As Worksheet
+
+    Dim dict As Object
+        Dim key As Variant
+
+
+    Dim tbl As ListObject
+    Dim newRow As ListRow
+
+    Dim k As Variant
+    '111111111111111111111111111111111111111
+
+    Dim lastRow7 As Long, lastRowNakh As Long
+    Dim i As Long, j As Long
+
+    Dim parts As Variant
+    Dim found As Boolean
+    '111111111111111111111111111111111
+'===================
+Sheet7.Select
+
+lastRow = Sheet7.Cells(Sheet7.Rows.Count, "b").End(xlUp).Row
+  For i = 3 To lastRow
+  If Sheet7.Range("e" & i).Value = "" Then
+
+
+
+Sheet7.Range("c" & i).Value = ComboBox70.text 'نوع نخ
+Sheet7.Range("d" & i).Value = ComboBox71.text ' نام مشتري
+Sheet7.Range("e" & i).Value = Tex_shfac.text ' شماره فاکتور
+Sheet7.Range("f" & i).Value = Tex_wazn.text ' وزن نخ
+Sheet7.Range("b" & i).Value = Slash(Shamsi()) ' تاريخ روز
+Sheet7.Range("h" & i).Value = TextBox31.text ' تاريخ عمليات
+Sheet7.Range("g" & i).Value = TextBox32.text ' شماره همبافت
+Exit For
+ End If
+Next i
+ ComboBox70.text = ""
+ ComboBox71.text = ""
+ Tex_shfac.text = ""
+ Tex_wazn.text = ""
+ TextBox32.text = ""
+ '**********************************
+ i = 0
+
+
+'Sub UpdateNakhTableWithNumericConversion()
+'    Dim ws7 As Worksheet, ws20 As Worksheet
+'    Dim dict As Object
+'    Dim tbl As ListObject
+'    Dim lastRow7 As Long
+'    Dim i As Long, j As Long
+'    Dim key As String
+'    Dim parts As Variant
+'    Dim found As Boolean
+    Dim cellValue As Variant
+    Dim numericValue As Double
+
+    ' تنظيم شيت‌ها و ديکشنري
+    Set ws7 = Sheet7
+    Set ws20 = Sheet22
+    Set dict = CreateObject("Scripting.Dictionary")
+
+    ' گرفتن رفرنس جدول nakh با کنترل خطا
+    On Error Resume Next
+    Set tbl = ws20.ListObjects("nakh")
+    On Error GoTo 0
+
+    If tbl Is Nothing Then
+        MsgBox "جدول nakh يافت نشد!", vbCritical
+        Exit Sub
+    End If
+
+    ' پيمايش سطرهاي شيت 7 و ساخت ديکشنري
+    lastRow7 = ws7.Cells(ws7.Rows.Count, "C").End(xlUp).Row
+
+    For i = 3 To lastRow7
+        ' تبديل مقادير به عدد و بررسي معتبر بودن
+        If Not IsEmpty(ws7.Cells(i, "C").Value) And _
+           Not IsEmpty(ws7.Cells(i, "D").Value) And _
+           Not IsEmpty(ws7.Cells(i, "G").Value) Then
+
+            ' تبديل مقادير به رشته و حذف فاصله‌هاي اضافه
+            Dim valC As String, valD As String, valG As String
+            valC = Trim(CStr(ws7.Cells(i, "C").Value))
+            valD = Trim(CStr(ws7.Cells(i, "D").Value))
+            valG = Trim(CStr(ws7.Cells(i, "G").Value))
+
+            ' ساخت کليد منحصر به فرد
+            key = UCase(valG) & "|" & UCase(valD) & "|" & UCase(valC)
+
+            ' تبديل مقدار F به عدد با کنترل خطا
+            cellValue = ws7.Cells(i, "F").Value
+            If IsNumeric(cellValue) Then
+                numericValue = CDbl(cellValue)
+            Else
+                ' اگر مقدار عددي نبود، از 0 استفاده مي‌کنيم
+                numericValue = 0
+                ' يا مي‌توانيد خطا دهيد:
+                ' MsgBox "مقدار غير عددي در سلول F" & i & " وجود دارد"
+                ' Exit Sub
+            End If
+
+            If dict.Exists(key) Then
+                dict(key) = dict(key) + numericValue
+            Else
+                dict.add key, numericValue
+            End If
+        End If
+    Next i
+
+    ' به‌روزرساني جدول nakh
+    Application.ScreenUpdating = False
+    For Each key In dict.Keys
+        parts = Split(key, "|")
+        found = False
+
+        ' جستجوي دقيق در جدول nakh
+        For j = 1 To tbl.ListRows.Count
+            If UCase(Trim(CStr(tbl.DataBodyRange(j, 1).Value))) = parts(0) And _
+               UCase(Trim(CStr(tbl.DataBodyRange(j, 2).Value))) = parts(1) And _
+               UCase(Trim(CStr(tbl.DataBodyRange(j, 3).Value))) = parts(2) Then
+
+                ' به‌روزرساني مقدار موجود
+                tbl.DataBodyRange(j, 4).Value = dict(key)
+                found = True
+                Exit For
+            End If
+        Next j
+
+        ' اگر رکوردي پيدا نشد، رکورد جديد اضافه کن
+        If Not found Then
+            With tbl.ListRows.add
+                .Range(1, 1).Value = parts(0)  ' ستون A (G)
+                .Range(1, 2).Value = parts(1)  ' ستون B (D)
+                .Range(1, 3).Value = parts(2)  ' ستون C (C)
+                .Range(1, 4).Value = dict(key) ' ستون D (جمع F)
+            End With
+        End If
+    Next key
+
+    ' محاسبه ستون G (G = D + E - F)
+    For j = 1 To tbl.ListRows.Count
+        With tbl.DataBodyRange(j, 7)
+            If IsNumeric(tbl.DataBodyRange(j, 4).Value) And _
+               IsNumeric(tbl.DataBodyRange(j, 5).Value) And _
+               IsNumeric(tbl.DataBodyRange(j, 6).Value) Then
+                .Value = CDbl(tbl.DataBodyRange(j, 4).Value) + _
+                         CDbl(tbl.DataBodyRange(j, 5).Value) - _
+                         CDbl(tbl.DataBodyRange(j, 6).Value)
+            Else
+                .Value = 0
+            End If
+        End With
+    Next j
+
+    Application.ScreenUpdating = True
+    MsgBox "عمليات با موفقيت انجام شد. مقادير شيت 7 به عدد تبديل شدند.", vbInformation
+    ActiveWorkbook.Save
+End Sub
+
+Private Sub CommandButton18_Click()
+Dim i As Integer
+Dim j As Integer
+Dim A As Integer
+Dim b As Integer
+'Sheet6.Select
+
+  lastRow = Sheet6.Cells(Sheet6.Rows.Count, "b").End(xlUp).Row
+  For i = 3 To lastRow
+  If Sheet6.Range("b" & i).Value = "" Then
+
+'  Label41.Caption = Sheet1.Range("a" & i).value
+  Sheet6.Range("g" & i).Value = TextBox33.text
+  Sheet6.Range("c" & i).Value = ComboBox72.text
+  Sheet6.Range("d" & i).Value = ComboBox73.text
+  Sheet6.Range("e" & i).Value = TextBox36.text
+  Sheet6.Range("f" & i).Value = TextBox35.text
+  Sheet6.Range("g" & i).Value = TextBox34.text
+
+  Sheet6.Range("b" & i).Value = Slash(Shamsi())
+
+ A = (i - 1)
+ b = i - 2
+
+    Exit For
+
+ End If
+Next i
+MsgBox "اطلاعات ثبت شد!", vbInformation
+TextBox24.text = ""
+'ComboBox15.text = ""
+'ComboBox16.text = ""
+TextBox22.text = ""
+TextBox23.text = ""
+End Sub
+
+Private Sub CommandButton19_Click()
+'وزود چله
+Dim i As Integer
+Dim j As Integer
+Dim A As Integer
+Dim b As Integer
+Sheet12.Select
+  lastRow = Sheet12.Cells(Sheet12.Rows.Count, "b").End(xlUp).Row
+  For i = 3 To lastRow
+  If Sheet12.Range("e" & i).Value = "" Then
+
+    Sheet12.Range("b" & i).Value = Slash(Shamsi())
+    Sheet12.Range("c" & i).Value = ComboBox9.text
+    Sheet12.Range("d" & i).Value = ComboBox10.text
+    Sheet12.Range("e" & i).Value = ComboBox11.text
+
+    Sheet12.Range("f" & i).Value = TextBox41.text
+    Sheet12.Range("H" & i).Value = TextBox39.text
+    Sheet12.Range("g" & i).Value = TextBox38.text
+    Sheet12.Range("J" & i).Value = TextBox40.text
+    Sheet12.Range("I" & i).Value = ComboBox12.text
+   ' Sheet12.Range("J" & i).value = TextBox9.Text
+
+   Exit For
+ End If
+Next i
+ComboBox9.text = ""
+     ComboBox10.text = ""
+     ComboBox11.text = ""
+     ComboBox12.text = ""
+
+     TextBox41.text = ""
+     TextBox39.text = ""
+'     ComboBox38.text = ""
+    'TextBox40.text = ""
+ MsgBox "اطلاعات ثبت شد!", vbInformation
+
+ActiveWorkbook.Save
+End Sub
+
+
+
+
+
+
+Private Sub CommandButton3_Click()
+
+
+    Dim sourceWS As Worksheet
+    Dim destWB As Workbook
+    Dim destWS As Worksheet
+    Dim sourceRange As Range
+    Dim destRange As Range
+    Dim sourceFilePath As String
+    Dim destFilePath As String
+
+    ' ادرس فايل مقصد
+    destFilePath = "d:\data.xlsx"
+
+    ' تنظيم شيت مبدا
+    Set sourceWS = ThisWorkbook.Sheets("Sheet1")
+
+    ' باز کردن فايل اکسل مقصد
+    Set destWB = Workbooks.Open(destFilePath)
+    Set destWS = destWB.Sheets("Sheet1")
+
+    ' تعيين محدوده اطلاعات در شيت ميدا
+    Set sourceRange = sourceWS.UsedRange
+
+    ' تعيين محدوده مقصد براي قرار دادن اطلاعات
+    Set destRange = destWS.Range("A1")
+
+    ' کپي شيت مبدا به شيت مقصد
+    sourceRange.Copy Destination:=destRange
+
+    ' ذخيره و بستن فايل مقصد
+    destWB.Save
+    destWB.Close
+
+    'نمايش پيام موفقيت
+    MsgBox "اطلاعات ثبت شد!", vbInformation
+
+End Sub
+
+Private Sub CommandButton20_Click()
+'11111111111111111
+Dim i As Integer
+Dim j As Integer
+Dim A As Integer
+Dim b As Integer
+Sheet3.Select
+  lastRow = Sheet3.Cells(Sheet3.Rows.Count, "b").End(xlUp).Row
+  For i = 3 To lastRow
+  If Sheet3.Range("c" & i).Value = "" Then
+
+    Sheet3.Range("b" & i).Value = Slash(Shamsi())
+    Sheet3.Range("c" & i).Value = ComboBox5.text
+    Sheet3.Range("h" & i).Value = ComboBox19.text
+    Sheet3.Range("d" & i).Value = ComboBox20.text
+    Sheet3.Range("e" & i).Value = ComboBox14.text
+     Sheet3.Range("f" & i).Value = TextBox17.text
+     Sheet3.Range("g" & i).Value = TextBox44.text
+
+    Exit For
+ End If
+Next i
+'''''''''''ثبت شماره ماشين رئبروي شماره چله در شيت ورود چله''''''''
+lastRow = Sheet12.Cells(Sheet12.Rows.Count, "g").End(xlUp).Row
+ For i = lastRow To 1 Step -1
+   If ComboBox19.text = Sheet12.Range("g" & i).Value Then
+         Sheet12.Range("k" & i).Value = ComboBox20.text
+         Exit For
+   End If
+ Next i
+
+''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+  Sheet8.Activate
+  [b3].Select
+  ActiveCell.End(xlDown).Select
+
+  ActiveCell.Offset(1, 0).Select
+  Selection.Value = ComboBox20.text
+
+  ActiveCell.Offset(0, 1).Select
+  Selection.Value = ComboBox19.text
+
+  ActiveCell.Offset(0, 1).Select
+  Selection.Value = ComboBox21.text
+
+  ActiveCell.Offset(0, 2).Select
+  Selection.Value = TextBox17
+
+  ActiveCell.Offset(0, 1).Select
+  Selection.Value = TextBox30
+
+MsgBox "اطلاعات ثبت شد!", vbInformation
+
+Tex_date.text = ""
+ ComboBox5.text = ""
+ ComboBox20.text = ""
+  ComboBox14.text = ""
+  ComboBox19.text = ""
+  ComboBox21.text = ""
+  TextBox30.text = ""
+ActiveWorkbook.Save
+End Sub
+
+Private Sub CommandButton21_Click()
+Dim i As Integer
+Dim j As Integer
+Dim A As Integer
+Dim b As Integer
+Sheet4.Select
+  lastRow = Sheet4.Cells(Sheet4.Rows.Count, "b").End(xlUp).Row
+  For i = 3 To lastRow
+  If Sheet4.Range("e" & i).Value = "" Then
+
+    Sheet4.Range("b" & i).Value = Slash(Shamsi())
+    Sheet4.Range("c" & i).Value = ComboBox45.text
+    Sheet4.Range("d" & i).Value = ComboBox3.text
+    Sheet4.Range("e" & i).Value = Com_mosh.text
+    Sheet4.Range("f" & i).Value = ComboBox4.text
+    Sheet4.Range("g" & i).Value = TextBox19.text
+
+    Exit For
+ End If
+Next i
+
+MsgBox "اطلاعات ثبت شد!", vbInformation
+
+ComboBox3.text = ""
+ ComboBox4.text = ""
+ Com_mosh.text = ""
+ ComboBox45.text = ""
+
+ActiveWorkbook.Save
+End Sub
+
+Private Sub CommandButton22_Click()
+Dim i As Integer
+Dim j As Integer
+Dim A As Integer
+Dim b As Integer
+Sheet5.Select
+  lastRow = Sheet5.Cells(Sheet5.Rows.Count, "b").End(xlUp).Row
+  For i = 3 To lastRow
+  If Sheet5.Range("e" & i).Value = "" Then
+
+
+Sheet5.Range("c" & i).Value = ComboBox17.text
+Sheet5.Range("d" & i).Value = ComboBox18.text
+Sheet5.Range("e" & i).Value = TextBox46.text
+Sheet5.Range("f" & i).Value = TextBox45.text
+Sheet5.Range("b" & i).Value = TextBox27.text
+Sheet5.Range("g" & i).Value = TextBox27.text
+Sheet5.Range("i" & i).Value = TextBox48.text
+
+
+
+
+ If OptionButton1.Value = True Then
+ Label96.Visible = False
+ Sheet5.Range("h" & i).Value = "ورودي"
+ End If
+
+
+ If OptionButton2.Value = True Then
+ Label96.Visible = False
+ Sheet5.Range("h" & i).Value = "خروجي"
+ End If
+
+Exit For
+ End If
+Next i
+ ComboBox17.text = ""
+ ComboBox18.text = ""
+ TextBox46.text = ""
+ TextBox45.text = ""
+ TextBox48.text = ""
+
+ MsgBox "اطلاعات ثبت شد!", vbInformation
+ActiveWorkbook.Save
+End Sub
+
+Private Sub CommandButton23_Click()
+UserForm1.Hide
+UserForm2.Hide
+ Sheet15.Select
+End Sub
+
+Public Sub Copy_Unique_Data_To_Table()
+'==================================================
+'Sub اول: کپي داده‌ها با Dictionary (از Sheet12 به جدول Sheet14)
+'==================================================
+    Dim wsSource As Worksheet, wsTarget As Worksheet
+    Dim tbl As ListObject
+    Dim dict As Object
+    Dim lastRow As Long
+    Dim i As Long
+    Dim key As String
+
+    Set wsSource = Sheet12
+    Set wsTarget = Sheet14
+
+    On Error Resume Next
+    Set tbl = wsTarget.ListObjects(1)
+    On Error GoTo 0
+
+    If tbl Is Nothing Then
+        MsgBox "جدولي در شيت مقصد يافت نشد!", vbExclamation
+        Exit Sub
+    End If
+
+    Set dict = CreateObject("Scripting.Dictionary")
+
+    ' پر کردن Dictionary از جدول
+    If Not tbl.DataBodyRange Is Nothing Then
+        For i = 1 To tbl.DataBodyRange.Rows.Count
+            key = CStr(tbl.DataBodyRange.Cells(i, 1).Value)
+            If Not dict.Exists(key) Then dict.add key, True
+        Next i
+    End If
+
+    lastRow = wsSource.Cells(wsSource.Rows.Count, "A").End(xlUp).Row
+
+    For i = 3 To lastRow
+        If Not IsEmpty(wsSource.Cells(i, 11).Value) Then
+
+            key = CStr(wsSource.Cells(i, 7).Value)
+
+            If Not dict.Exists(key) Then
+                With tbl.ListRows.add
+                    .Range(1) = wsSource.Cells(i, 7).Value
+                    .Range(2) = wsSource.Cells(i, 8).Value
+                    .Range(3) = wsSource.Cells(i, 11).Value
+                End With
+
+                dict.add key, True
+            End If
+        End If
+    Next i
+
+End Sub
+
+
+' تابع تبديل اعداد فارسي/عربي به انگليسي
+Private Function NormalizeNumber(ByVal txt As String) As String
+    Dim i As Long
+    Dim ch As String
+    Dim code As Long
+    Dim result As String
+
+    result = ""
+
+    For i = 1 To Len(txt)
+        ch = Mid(txt, i, 1)
+        code = AscW(ch)
+
+        Select Case code
+            ' اعداد فارسي (?-?)
+            Case 1776 To 1785
+                result = result & ChrW(code - 1728)
+
+            ' اعداد عربي (0-9)
+            Case 1632 To 1641
+                result = result & ChrW(code - 1584)
+
+            ' اعداد انگليسي (0-9)
+            Case 48 To 57
+                result = result & ch
+
+            ' حروف فارسي/عربي/انگليسي - بدون تغيير
+            Case Else
+                result = result & ch
+        End Select
+    Next i
+
+    NormalizeNumber = result
+End Function
+
+'======================================================
+' Sub دوم: محاسبات اصلي (Warp / Table / Nakh) با ضريب پويا
+'Public Sub Calc_Warp_Data()
+'منطق اين کد را ببين
+'======================================================
+'2?? Sub دوم: محاسبات اصلي (Warp / Table / Nakh)
+Public Sub Calc_Warp_Data()
+
+    Dim wssData As Worksheet, wssTable As Worksheet, wssNakh As Worksheet
+    Dim lastRowData As Long, lastRowTable As Long, lastRowNakh As Long, lastRowAH As Long
+    Dim ii As Long, jj As Long
+    Dim g As Long
+    Dim j As Long
+    Dim k As Long
+
+    Dim billNo As String, car As String
+    Dim SumMValue As Double, SumWValue As Double, Sumnakh As Double
+    Dim countValue As Long
+    Dim m As Double, w As Double, s As Double
+    Dim A As Double
+    Dim BB As Double
+    Dim AO As Double
+    Dim AN As Double
+
+    Set wssData = Sheet14
+    Set wssTable = Sheet1
+    Set wssNakh = Sheet11
+
+            SumWValue = 0
+            SumMValue = 0
+            countValue = 0
+            Sumnakh = 0
+
+    lastRowData = wssData.Cells(wssData.Rows.Count, "A").End(xlUp).Row
+    lastRowTable = wssTable.Cells(wssTable.Rows.Count, "A").End(xlUp).Row
+    lastRowNakh = wssNakh.Cells(wssNakh.Rows.Count, "F").End(xlUp).Row
+
+    car = TextBox3.Value
+    billNo = TextBox12.Value
+
+    Application.ScreenUpdating = False
+    Application.Calculation = xlCalculationManual
+
+   '================================================
+  lastRowAH = wssTable.Cells(wssTable.Rows.Count, "AH").End(xlUp).Row
+   For ii = 2 To lastRowAH
+         If car = wssTable.Cells(ii, "AH").Value Then
+
+            AO = wssTable.Cells(ii, "AO").Value
+            AN = wssTable.Cells(ii, "AN").Value
+            Exit For
+        End If
+    Next ii
+
+
+   '================================================
+
+
+    For g = 3 To lastRowData
+
+       If car = wssData.Cells(g, "C").Value _
+               And billNo = wssData.Cells(g, "A").Value Then
+
+'
+        A = wssData.Cells(g, "B").Value
+
+        End If
+        Next g
+        ' ---- Table ----
+        For jj = 2 To lastRowTable
+            If wssTable.Cells(jj, "M").Value = billNo _
+               And wssTable.Cells(jj, "C").Value = car Then
+
+                SumWValue = SumWValue + Val(wssTable.Cells(jj, "D").Value)
+                SumMValue = SumMValue + Val(wssTable.Cells(jj, "B").Value)
+                countValue = countValue + 1
+            End If
+        Next jj
+
+        ' ---- Nakh ----
+        For jj = 2 To lastRowNakh
+            If wssNakh.Cells(jj, "F").Value = billNo _
+               And wssNakh.Cells(jj, "C").Value = car Then
+
+                Sumnakh = Sumnakh + Val(wssNakh.Cells(jj, "E").Value)
+            End If
+        Next jj
+
+        m = SumWValue * AO / 100
+        w = SumWValue * AN / 100
+        s = A - w
+
+'     ii = 0
+
+     For j = 3 To lastRowData
+        If car = wssData.Cells(j, "C").Value _
+               And billNo = wssData.Cells(j, "A").Value Then
+
+
+        With wssData
+            .Cells(j, "F").Value = SumWValue
+            .Cells(j, "G").Value = m
+            .Cells(j, "E").Value = SumMValue
+            .Cells(j, "H").Value = w
+            .Cells(j, "I").Value = s
+            .Cells(j, "D").Value = countValue
+            .Cells(j, "J").Value = Sumnakh
+            .Cells(j, "K").Value = Sumnakh - m
+        End With
+    Exit For
+    End If
+
+Next j
+
+
+    Application.Calculation = xlCalculationAutomatic
+    Application.ScreenUpdating = True
+
+End Sub
+
+' تابع کمکي براي بررسي وجود شيت
+Function SheetExists(sheetName As String) As Boolean
+    On Error Resume Next
+    SheetExists = Not ThisWorkbook.Worksheets(sheetName) Is Nothing
+    On Error GoTo 0
+End Function
+
+
+
+
+
+' تابع کمکي براي ديباگ - نمايش مقادير ستون AH
+Public Sub Show_AH_Values()
+    Dim ws As Worksheet
+    Dim i As Long
+
+    Set ws = ThisWorkbook.Sheets("Sheet1")
+
+    Debug.Print "مقادير ستون AH (سطر 2 تا 16):"
+    For i = 2 To 16
+        Debug.Print "AH" & i & ": " & ws.Cells(i, "AH").Value & _
+                   "  |  نرمالايز شده: " & NormalizeNumber(Trim(CStr(ws.Cells(i, "AH").Value)))
+    Next i
+End Sub
+
+
+
+
+'=========================================
+''3?? Sub سوم: Refresh و پايان کار
+Public Sub Final_Refresh()
+
+    Sheet15.Select
+    ActiveWorkbook.RefreshAll
+
+End Sub
+
+''Private Sub CommandButton24_Click()
+''
+''    Dim wsSource As Worksheet
+''    Dim wsTarget As Worksheet
+''    Dim lastRow As Long
+''    Dim i As Long
+''    Dim tbl As ListObject
+''    Dim dict As Object
+''    Dim key As String
+''
+''    ' تعريف شيت مبدا و مقصد
+''    Set wsSource = Sheet12
+''    Set wsTarget = Sheet14
+''
+''    ' تعريف جدول (تيبل) در شيت مقصد
+''    On Error Resume Next
+''    Set tbl = wsTarget.ListObjects(1) ' اولين جدول در شيت
+''    On Error GoTo 0
+''
+''    ' اگر جدول وجود نداشت، پيام خطا نمايش داده شود
+''    If tbl Is Nothing Then
+''        MsgBox "جدولي در شيت مقصد يافت نشد!", vbExclamation
+''        Exit Sub
+''    End If
+''
+''    ' ايجاد Dictionary براي ذخيره مقادير موجود در ستون A جدول
+''    Set dict = CreateObject("Scripting.Dictionary")
+''
+''    ' پر کردن Dictionary با مقادير موجود در ستون A جدول
+''    If Not tbl.DataBodyRange Is Nothing Then
+''        For i = 1 To tbl.DataBodyRange.Rows.Count
+''            key = CStr(tbl.DataBodyRange.Cells(i, 1).Value)
+''            If Not dict.Exists(key) Then
+''                dict.add key, 1
+''            End If
+''        Next i
+''    End If
+''
+''    ' پيدا کردن آخرين سطر داراي داده در شيت مبدا
+''    lastRow = wsSource.Cells(wsSource.Rows.Count, "A").End(xlUp).Row
+''
+''    ' حلقه از سطر 3 تا آخرين سطر داراي داده
+''    For i = 3 To lastRow
+''        ' بررسي آيا سلول در ستون K (ستون 11) مقداري دارد
+''        If Not IsEmpty(wsSource.Cells(i, 11).Value) Then
+''            ' بررسي تکراري نبودن مقدار ستون 7 (که در ستون A جدول قرار مي‌گيرد)
+''            key = CStr(wsSource.Cells(i, 7).Value)
+''
+''            If Not dict.Exists(key) Then
+''                ' افزودن سطر جديد به جدول
+''                Dim newRow As ListRow
+''                Set newRow = tbl.ListRows.add
+''
+''                ' پر کردن داده‌ها در سطر جديد جدول
+''                With newRow
+''                    ' ستون A جدول (مقدار ستون 7 از شيت مبدا)
+''                    .Range(1) = wsSource.Cells(i, 7).Value
+''
+''                    ' ستون B جدول (مقدار ستون 8 از شيت مبدا)
+''                    .Range(2) = wsSource.Cells(i, 8).Value
+''
+''                    ' ستون C جدول (مقدار ستون 11 از شيت مبدا)
+''                    .Range(3) = wsSource.Cells(i, 11).Value
+''                End With
+''
+''                ' اضافه کردن مقدار جديد به Dictionary
+''                dict.add key, 1
+''            End If
+''        End If
+''    Next i
+''
+''   ' MsgBox "عمليات کپي با موفقيت انجام شد و از درج داده‌هاي تکراري جلوگيري شد!", vbInformation
+''
+'''3333333333333333333333333
+''
+''
+'' Dim wssData As Worksheet, wssTable As Worksheet
+''    Dim lastRowData As Long, lastRowTable As Long
+''    Dim ii As Long, jj As Long
+''    Dim billNo As String, car As String
+''    Dim SumMValue As Double, countValue As Long
+''    Dim SumWValue As Double
+''    Dim Sumnakh As Double
+''    Dim s As Integer
+''
+''    ' تنظيم شيت‌ها
+''    Set wssData = Sheet14
+''    Set wssTable = Sheet1
+''     Set wssNakh = Sheet11
+''
+''    ' پيدا کردن آخرين سطر داده
+''    lastRowData = wssData.Cells(wssData.Rows.Count, "A").End(xlUp).Row
+''    lastRowTable = wssTable.Cells(wssTable.Rows.Count, "A").End(xlUp).Row
+''    lastRowNakh = wssNakh.Cells(wssNakh.Rows.Count, "F").End(xlUp).Row
+''
+''    Application.ScreenUpdating = False
+''    Application.Calculation = xlCalculationManual
+''
+''    ' حلقه بر روي تمام سطرهاي داده در شيت ورود چله
+''    For ii = 3 To lastRowData
+''        billNo = wssData.Cells(ii, "A").Value
+''        car = wssData.Cells(ii, "C").Value
+''        SumWValue = 0
+''        SumMValue = 0
+''        countValue = 0
+''        Sumnakh = 0
+''
+''        ' حلقه بر روي داده‌هاي شيت Table
+''        For jj = 2 To lastRowTable
+''            If wssTable.Cells(jj, "M").Value = billNo And _
+''               wssTable.Cells(jj, "C").Value = car Then
+''                SumWValue = SumWValue + wssTable.Cells(jj, "D").Value
+''                SumMValue = SumMValue + wssTable.Cells(jj, "B").Value
+''                countValue = countValue + 1
+''
+''
+''
+''
+''            End If
+''        Next jj
+''
+''        For jj = 2 To lastRowNakh
+''            If wssNakh.Cells(jj, "F").Value = billNo And _
+''               wssNakh.Cells(jj, "C").Value = car Then
+''
+''
+''                   Sumnakh = Sumnakh + wssNakh.Cells(jj, "e").Value
+''
+''                  End If
+''          Next jj
+''
+''        ' قرار دادن مقادير محاسبه شده در سلول‌ها
+''        wssData.Cells(ii, "F").Value = SumWValue
+''        m = SumWValue * wssTable.Range("AO2").Value / 100
+''
+''        wssData.Cells(ii, "G").Value = m
+''
+''
+''        wssData.Cells(ii, "E").Value = SumMValue
+''        w = SumWValue * wssTable.Range("AN2").Value / 100
+''
+''        wssData.Cells(ii, "H").Value = w
+''
+''        s = wssData.Cells(ii, "B").Value - w
+''
+''        wssData.Cells(ii, "I").Value = s
+''
+''        wssData.Cells(ii, "D").Value = countValue
+''
+''
+''         wssData.Cells(ii, "j").Value = Sumnakh
+''         wssData.Cells(ii, "k").Value = wssData.Cells(ii, "j").Value - wssData.Cells(ii, "G").Value
+''
+''    Next ii
+''
+''    Application.Calculation = xlCalculationAutomatic
+''    Application.ScreenUpdating = True
+''
+'''    MsgBox "محاسبات با موفقيت انجام شد و مقادير در سلول‌ها قرار داده شدند.", vbInformation
+''
+''
+''
+''    Sheet15.Select
+''    ActiveWorkbook.RefreshAll
+''
+'' End
+Private Sub CommandButton24_Click()
+
+    Copy_Unique_Data_To_Table
+    Calc_Warp_Data
+    Final_Refresh
+
+     End
+
+End Sub
+
+Private Sub CommandButton25_Click()
+'Faktor.Show
+UserForm1.Hide
+UserForm2.Hide
+ Sheet13.Select
+   ' Faktor.Show
+End Sub
+
+
+
+
+Private Sub CommandButton26_Click()
+    On Error GoTo ErrorHandler
+
+    Dim timestamp As String
+    Dim backupFolder As String
+
+    ' ايجاد پوشه بک‌آپ در صورت عدم وجود
+    If Dir(BACKUP_PATH, vbDirectory) = "" Then
+        MkDir BACKUP_PATH
+    End If
+
+    ' دريافت timestamp براي نام پوشه
+    timestamp = Format(Now, "yyyy-mm-dd_hh-mm-ss")
+    backupFolder = BACKUP_PATH & "VBA_Backup_" & timestamp & "\"
+
+    ' ايجاد پوشه براي اين بک‌آپ
+    If Dir(backupFolder, vbDirectory) = "" Then
+        MkDir backupFolder
+    End If
+
+    ' بررسي فعال بودن دسترسي به VBA Project
+    If Not VBAProjectAccessEnabled() Then
+        MsgBox "دسترسي به پروژه VBA فعال نيست." & vbCrLf & _
+               "لطفاً از Trust Center اين تنظيم را فعال کنيد.", vbExclamation
+        Exit Sub
+    End If
+
+    ' Export تمام کامپوننت‌هاي VBA
+    ExportVBAComponents backupFolder
+
+    MsgBox "بک‌آپ ماژول‌ها و فرم‌هاي VBA با موفقيت در مسير زير ذخيره شد:" & _
+           vbCrLf & backupFolder, vbInformation, "تهيه بک‌آپ موفق"
+
+    Exit Sub
+
+ErrorHandler:
+    MsgBox "خطا در تهيه بک‌آپ:" & vbCrLf & Err.Description, vbCritical
+End Sub
+
+
+' متغير سطح ماژول براي ذخيره تعداد سطرهاي موجود
+Private currentRowCount As Long
+
+' متغير سطح ماژول براي ذخيره وضعيت اوليه
+Private isInitialized As Boolean
+
+' متغير سطح ماژول براي ذخيره وضعيت
+Private isInitialized As Boolean
+Private nextRowIndex As Long
+
+' متغير سطح ماژول براي پيگيري وضعيت
+Private isInitialized As Boolean
+
+' متغير سطح ماژول
+Private searchResults As Collection
+Private Sub CommandButton33_Click()
+Load_Machine_Values_From_Sheet14
+
+End Sub
+Private Sub Load_Machine_Values_From_Sheet14()
+
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim i As Long
+    Dim m As Integer
+    Dim machineValue As Variant
+    Dim lbl As MSForms.Label
+    Dim used(1 To 15) As Boolean
+
+    Dim curVal As Double   ' ستون 9
+    Dim refVal As Double   ' ستون 2
+    Dim ratio As Double
+
+    Set ws = Sheet14
+    lastRow = ws.Cells(ws.Rows.Count, 3).End(xlUp).Row
+
+    ' ================= پاک کردن ليبل‌ها =================
+    For m = 1 To 15
+
+        Set lbl = GetMachineLabel(m)
+
+        If Not lbl Is Nothing Then
+            lbl.Caption = ""
+            lbl.BackColor = RGB(240, 240, 240)
+            lbl.ForeColor = RGB(0, 0, 0)
+        End If
+
+        used(m) = False
+    Next m
+
+    ' ================= بارگذاري مقادير =================
+    For i = lastRow To 2 Step -1
+
+        machineValue = ws.Cells(i, 3).Value   ' شماره ماشين
+
+        If IsNumeric(machineValue) Then
+            m = CInt(machineValue)
+
+            If m >= 1 And m <= 15 Then
+                If Not used(m) Then
+
+                    If IsNumeric(ws.Cells(i, 9).Value) And IsNumeric(ws.Cells(i, 2).Value) Then
+
+                        curVal = CDbl(ws.Cells(i, 9).Value)
+                        refVal = CDbl(ws.Cells(i, 2).Value)
+
+                        Set lbl = GetMachineLabel(m)
+
+                        If Not lbl Is Nothing Then
+
+                            lbl.Caption = Format(curVal, "0.0")
+
+                            If refVal <> 0 Then
+                                ratio = curVal / refVal
+                            Else
+                                ratio = 1
+                            End If
+
+                            ' ================= رنگ‌بندي =================
+                            If curVal < 0 Then
+                                lbl.BackColor = RGB(180, 0, 0)
+                                lbl.ForeColor = RGB(255, 255, 255)
+
+                                MsgBox "? هشدار بحراني!" & vbCrLf & _
+                                       "مقدار ماشين M" & m & " منفي شده است.", _
+                                       vbCritical, "هشدار موجودي"
+
+                            ElseIf ratio < 0.2 Then
+                                lbl.BackColor = RGB(255, 192, 203)
+                                lbl.ForeColor = RGB(200, 0, 0)
+
+                            ElseIf ratio < 0.5 Then
+                                lbl.BackColor = RGB(255, 192, 203)
+                                lbl.ForeColor = RGB(0, 0, 0)
+
+                            Else
+                                lbl.BackColor = RGB(144, 238, 144)
+                                lbl.ForeColor = RGB(0, 0, 0)
+                            End If
+
+                        End If
+
+                        used(m) = True
+                    End If
+                End If
+            End If
+        End If
+    Next i
+
+End Sub
+
+
+'Private Function GetMachineLabel(machineNo As Integer) As MSForms.Label
+'    Dim name As String
+'
+'    If machineNo = 1 Then name = "MM1"
+'    ElseIf machineNo = 3 Then name = "MM3"
+'    ElseIf machineNo >= 2 And machineNo <= 15 Then name = "M" & machineNo
+'    End If
+'
+'    If name <> "" Then
+'        On Error Resume Next
+'        Set GetMachineLabel = Me.controls(name)
+'        On Error GoTo 0
+'    End If
+'End Function
+
+Private Sub ColorLabelBasedOnLogic(lbl As MSForms.Label, targetVal As Variant, actualVal As Variant)
+    Dim target As Double, actual As Double, perc As Double
+
+    If IsNumeric(targetVal) And IsNumeric(actualVal) Then
+        target = CDbl(targetVal)
+        actual = CDbl(actualVal)
+
+        If target > 0 Then
+            perc = (actual / target) * 100
+
+            Select Case True
+                Case actual = target
+                    lbl.BackColor = vbGreen
+                    lbl.ForeColor = vbWhite
+                Case perc < 20
+                    lbl.BackColor = RGB(255, 182, 193) ' صورتي
+                    lbl.ForeColor = vbRed
+                    lbl.Font.Bold = True
+                Case perc < 50
+                    lbl.BackColor = RGB(255, 182, 193) ' صورتي
+                    lbl.ForeColor = vbBlack
+                    lbl.Font.Bold = False
+                Case Else
+                    lbl.BackColor = &H8000000F
+                    lbl.ForeColor = &H80000012
+            End Select
+        End If
+    End If
+End Sub
+
+
+
+
+' در بالاي ماژول اين تابع را اضافه کنيد
+Function Nz(Value As Variant, Optional DefaultValue As Variant = "") As Variant
+    If IsEmpty(Value) Or IsNull(Value) Then
+        Nz = DefaultValue
+    Else
+        Nz = Value
+    End If
+End Function ' تابع جداگانه براي پر کردن ComboBox
+Private Sub CommandButton31_Click()
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim emptyCount As Long
+    Dim sumB As Double
+    Dim sumD As Double
+    Dim i As Long
+    Dim filterValue As String
+
+    ' دريافت مقدار انتخاب شده از ComboBox75
+    filterValue = Me.ComboBox75.Value
+
+    ' اگر "(همه موارد)" انتخاب شده باشد، فيلتر اعمال نشود
+    If filterValue = "(همه موارد)" Then
+        filterValue = ""
+    End If
+
+    ' تنظيم ورق کاري
+    Set ws = ThisWorkbook.Sheets("Sheet1")
+
+    ' پيدا کردن آخرين سطر در ستون A
+    lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
+
+    ' مقداردهي اوليه متغيرها
+    emptyCount = 0
+    sumB = 0
+    sumD = 0
+
+    ' عيب‌يابي: نمايش مقادير فيلتر و داده‌ها
+    Debug.Print "=== DEBUG INFO ==="
+    Debug.Print "Filter value: '" & filterValue & "'"
+    Debug.Print "Last row: " & lastRow
+
+    ' حلقه through سطرها
+    For i = 1 To lastRow
+        ' شرط اصلي: ستون N خالي و ستون A پر باشد
+        If IsEmpty(ws.Cells(i, "N").Value) And Not IsEmpty(ws.Cells(i, "A").Value) Then
+
+            ' اعمال فيلتر
+            Dim shouldInclude As Boolean
+            shouldInclude = False
+
+            If filterValue = "" Then
+                shouldInclude = True
+            Else
+                ' مقايسه دقيق با حذف فاصله‌ها
+                Dim cellValue As String
+                Dim filterVal As String
+
+                cellValue = Trim(CStr(Nz(ws.Cells(i, "J").Value, "")))
+                filterVal = Trim(CStr(filterValue))
+
+                If cellValue = filterVal Then
+                    shouldInclude = True
+                    Debug.Print "INCLUDE - Row " & i & ": J='" & cellValue & "' matches filter='" & filterVal & "'"
+                End If
+            End If
+
+            If shouldInclude Then
+                emptyCount = emptyCount + 1
+
+                ' جمع ستون B (مبلغ)
+                If IsNumeric(ws.Cells(i, "B").Value) Then
+                    sumB = sumB + CDbl(ws.Cells(i, "B").Value)
+                    Debug.Print "Row " & i & ": Adding B=" & ws.Cells(i, "B").Value & ", Total B=" & sumB
+                End If
+
+                ' جمع ستون D (تعداد)
+                If IsNumeric(ws.Cells(i, "D").Value) Then
+                    sumD = sumD + CDbl(ws.Cells(i, "D").Value)
+                    Debug.Print "Row " & i & ": Adding D=" & ws.Cells(i, "D").Value & ", Total D=" & sumD
+                End If
+            End If
+        End If
+    Next i
+
+    ' نمايش نتايج در ليبل‌ها
+    Me.Label137.Caption = emptyCount
+    Me.Label138.Caption = sumD
+    Me.Label139.Caption = sumB
+
+    Debug.Print "=== RESULTS ==="
+    Debug.Print "Count: " & emptyCount
+    Debug.Print "Sum B: " & sumB
+    Debug.Print "Sum D: " & sumD
+End Sub
+
+
+
+
+
+
+Private Sub CommandButton30_Click()
+
+    Dim searchValue As String
+    Dim i As Long
+    Dim foundIndex As Long
+    Dim listCount As Long
+
+    ' دريافت مقدار جستجو از TextBox52
+    searchValue = Trim(Me.TextBox52.Value)
+
+    ' بررسي خالي نبودن مقدار جستجو
+    If searchValue = "" Then
+        MsgBox "لطفاً مقداري براي جستجو وارد کنيد", vbExclamation
+        Me.TextBox52.SetFocus
+        Exit Sub
+    End If
+
+    ' بررسي وجود آيتم در ليست باکس
+    listCount = Me.ListBoxResults.listCount
+    If listCount = 0 Then
+        MsgBox "ليست باکس خالي است", vbExclamation
+        Exit Sub
+    End If
+
+    ' جستجو در ستون اول ليست باکس (ستون کد)
+    foundIndex = -1
+    For i = 0 To listCount - 1
+        If Me.ListBoxResults.List(i, 0) = searchValue Then
+            foundIndex = i
+            Exit For
+        End If
+    Next i
+
+    ' اگر مقدار پيدا شد، سطر مربوطه را حذف کن
+    If foundIndex >= 0 Then
+        Me.ListBoxResults.RemoveItem foundIndex
+        MsgBox "سطر با کد " & searchValue & " از ليست باکس حذف شد", vbInformation
+    Else
+        MsgBox "کد " & searchValue & " در ليست باکس يافت نشد", vbExclamation
+    End If
+    '===========================================
+     Dim totalMeterage As Double
+    Dim totalWeight As Double
+    Dim rollCount As Long
+    Me.Frame44.Visible = True
+
+    ' اگر ليست داده ندارد
+    If Me.ListBoxResults.listCount <= 1 Then
+        Exit Sub
+    End If
+
+    ' محاسبه خلاصه
+    Calc_ListBox_Summary Me.ListBoxResults, totalMeterage, totalWeight, rollCount
+
+    ' نمايش در ليبل‌ها
+    Me.Label130.Caption = Format(totalMeterage, "#,##0.00") ' متراژ
+    Me.Label131.Caption = Format(totalWeight, "#,##0.00")  ' وزن
+    Me.Label145.Caption = rollCount                        ' تعداد طاق
+
+    '=============================================
+    ' پاک کردن TextBox و تنظيم فوکوس
+    Me.TextBox52.Value = ""
+    Me.TextBox52.SetFocus
+End Sub
+
+Private Sub CommandButton32_Click()
+ Dim ws1 As Worksheet
+
+    ' تعريف شيت مبدا و مقصد
+    Set ws1 = Sheet1
+    ws1.Range("AP2").Value = TextBox54.text
+
+    MsgBox "اطلاعات ثبت شد!", vbInformation
+
+End Sub
+
+Sub SelectLabel(labelName As String)
+    Dim lbl As MSForms.Label
+
+    On Error Resume Next
+    Set lbl = Me.controls(labelName)
+    On Error GoTo 0
+
+    If Not lbl Is Nothing Then
+        ' در UserForm VBA، کنترل‌ها مستقيماً Selectable نيستند
+        ' اما مي‌توانيم فوکوس را منتقل کنيم (اگر قابل فوکوس باشد)
+        lbl.SetFocus
+        ' يا با رنگ نشانه‌گذاري کنيم
+        lbl.BackColor = vbYellow
+        lbl.BorderStyle = fmBorderStyleSingle
+    End If
+End Sub
+
+Private Sub CommandButton34_Click()
+'Private Sub Rename_Labels_OneTime()
+
+    With Me   ' اگر داخل خود UserForm هستي
+
+        ' M1 و M3 ? MM1 و MM3
+        .controls("M1").name = "MM1"
+        .controls("M3").name = "MM3"
+
+        ' Label140 و Label141 ? M1 و M3
+        .controls("Label140").name = "M1"
+        .controls("Label141").name = "M3"
+
+    End With
+
+    MsgBox "تغيير نام ليبل‌ها با موفقيت انجام شد ?", vbInformation
+
+End Sub
+
+
+Private Sub CommandButton35_Click()
+
+    Dim totalMeterage As Double
+    Dim totalWeight As Double
+    Dim rollCount As Long
+    Me.Frame44.Visible = True
+
+    ' اگر ليست داده ندارد
+    If Me.ListBoxResults.listCount <= 1 Then
+        Exit Sub
+    End If
+
+    ' محاسبه خلاصه
+    Calc_ListBox_Summary Me.ListBoxResults, totalMeterage, totalWeight, rollCount
+
+    ' نمايش در ليبل‌ها
+    Me.Label130.Caption = Format(totalMeterage, "#,##0.00") ' متراژ
+    Me.Label131.Caption = Format(totalWeight, "#,##0.00")  ' وزن
+    Me.Label145.Caption = rollCount                        ' تعداد طاق
+
+End Sub
+
+Public Sub Calc_ListBox_Summary( _
+        lst As MSForms.ListBox, _
+        ByRef totalMeter As Double, _
+        ByRef totalWeight As Double, _
+        ByRef rollCount As Long)
+
+    Dim i As Long
+
+    totalMeter = 0
+    totalWeight = 0
+    rollCount = 0
+
+    ' شروع از 1 براي رد کردن سطر سرستون
+    For i = 1 To lst.listCount - 1
+
+        ' تعداد طاق
+        rollCount = rollCount + 1
+
+        ' متراژ (ستون دوم)
+        If IsNumeric(lst.List(i, 1)) Then
+            totalMeter = totalMeter + CDbl(lst.List(i, 1))
+        End If
+
+        ' وزن (ستون سوم)
+        If IsNumeric(lst.List(i, 2)) Then
+            totalWeight = totalWeight + CDbl(lst.List(i, 2))
+        End If
+
+    Next i
+
+End Sub
+
+
+
+Private Sub CommandButton38_Click()
+
+ Dim wsSource As Worksheet
+
+    Dim lastRow As Long
+    Dim i As Long
+
+    ' تعريف شيت مبدا و مقصد
+    Set wsSource = Sheet1
+
+
+    ' پيدا کردن آخرين سطر داراي داده در شيت مبدا
+    lastRow = wsSource.Cells(wsSource.Rows.Count, "Aq").End(xlUp).Row + 1
+
+    ' حلقه از سطر 3 تا آخرين سطر داراي داده
+
+
+        ' بررسي آيا سلول در ستون K (ستون 11) مقداري دارد
+        If wsSource.Range("Aq" & lastRow).Value = "" Then
+            wsSource.Range("Aq" & lastRow).Value = TextBox55.text
+             MsgBox "کاربر جديد ثبت شد", vbExclamation
+
+        End If
+End Sub
+
+Private Sub CommandButton39_Click()
+
+  '====================================================
+   Dim searchValue As String
+'    Dim lastRow As Long
+'    Dim i As Long
+    Dim rowData(1 To 7) As Variant
+'    Dim ws As Worksheet
+    Dim searchCode As String
+    Dim foundCell As Range
+    Dim isDuplicate As Boolean
+    i = 0
+
+    Set wsN = Sheet22
+'==================================================
+         Me.ListBoxnakh.Clear
+'        For i = .listCount - 1 To 1 Step -1
+'                    .RemoveItem i
+'                Next i
+'==================================================
+i = 0
+
+
+    lastRow = wsN.Cells(wsN.Rows.Count, "A").End(xlUp).Row
+
+    ' آماده‌سازي ليست‌باکس
+    If Me.ListBoxnakh.listCount = 0 Then
+        Me.ListBoxnakh.Clear
+        Me.ListBoxnakh.ColumnCount = 5
+        Me.ListBoxnakh.ColumnWidths = "150;150;150;150;150;150"
+'        Me.ListBoxnakh.AddItem "A      B      C      D      E      F      G"
+    End If
+
+
+
+    ' جستجو و افزودن داده‌ها
+   For i = 1 To lastRow
+    If wsN.Cells(i, "G").Value > 0 Then
+        rowData(1) = wsN.Cells(i, "A").Value
+        rowData(2) = wsN.Cells(i, "B").Value
+        rowData(3) = wsN.Cells(i, "C").Value
+ '       rowData(4) = wsN.Cells(i, "D").Value
+'        rowData(5) = wsN.Cells(i, "E").Value
+        rowData(4) = wsN.Cells(i, "F").Value
+        rowData(5) = wsN.Cells(i, "G").Value
+
+
+
+
+            Me.ListBoxnakh.AddItem
+            Dim newIndex As Long
+            newIndex = Me.ListBoxnakh.listCount - 1
+
+'            Dim colIndex As Long
+            For colIndex = 0 To 6
+                Me.ListBoxnakh.List(newIndex, colIndex) = rowData(colIndex + 1)
+            Next colIndex
+
+        End If
+    Next i
+
+
+'==================================================
+
+End Sub
+
+Private Sub CommandButtonClearList_Click()
+ Me.Frame44.Visible = False
+
+    ' پاکسازي تمام سطرهاي ListBox به جز سرستون
+    With Me.ListBoxResults
+        ' حذف تمام سطرها از آخر به اول
+        For i = .listCount - 1 To 1 Step -1
+            .RemoveItem i
+        Next i
+
+        ' نمايش پيام تأييد
+        MsgBox "ليست با موفقيت پاکسازي شد.", vbInformation, "پاکسازي ليست"
+    End With
+End Sub
+
+
+
+
+
+Private Sub Frame47_Click()
+
+End Sub
+
+Private Sub Label141_Click()
+
+End Sub
+
+Private Sub Label144_Click()
+
+End Sub
+
+Private Sub M5_Click()
+
+End Sub
+
+Private Sub TextBox27_Change()
+
+End Sub
+
+Private Sub TextBox28_Change()
+
+End Sub
+
+Private Sub TextBox49_AfterUpdate()
+
+    Dim ws As Worksheet
+    Dim findValue As String
+    Dim findRange As Range
+    Dim rowNumber As Long
+    Dim i As Long
+    Dim rowIndex As Integer
+    Dim colIndex As Integer
+    Dim labels(1 To 3, 1 To 4) As String
+    Dim lbl As Object
+
+    Set ws = ThisWorkbook.Sheets("Sheet1")
+    findValue = TextBox5.Value
+
+    ' پيدا کردن سطري که مقدار در TextBox5 را دارد
+    Set findRange = ws.Range("A:A").Find(What:=findValue, LookIn:=xlValues, LookAt:=xlWhole)
+
+    If Not findRange Is Nothing Then
+        rowNumber = findRange.Row
+
+        ' بررسي آيا ستون N خالي است يا نه
+        If Not IsEmpty(ws.Cells(rowNumber, 14).Value) Then
+            MsgBox "اين صاقه در فاکتور (" & ws.Cells(rowNumber, 14).Value & ") ثبت شده است", vbExclamation
+            TextBox5.SetFocus
+            Exit Sub
+        End If
+
+        ' قرار دادن مقادير در TextBoxها
+        TextBox6.Value = ws.Cells(rowNumber, 2).Value  ' ستون B
+        TextBox7.Value = ws.Cells(rowNumber, 3).Value  ' ستون C
+        TextBox8.Value = ws.Cells(rowNumber, 4).Value  ' ستون D
+        TextBox16.Value = ws.Cells(rowNumber, 11).Value
+        TextBox17.Value = ws.Cells(rowNumber, 12).Value
+        TextBox18.Value = ws.Cells(rowNumber, 13).Value
+
+    Else
+        MsgBox "مقدار يافت نشد", vbExclamation
+        TextBox5.SetFocus
+    End If
+
+    ' تعيين نام ليبل‌ها به ترتيب رديف و ستون
+    labels(1, 1) = "LabelRow1Col1": labels(1, 2) = "LabelRow1Col2": labels(1, 3) = "LabelRow1Col3": labels(1, 4) = "LabelRow1Col4"
+    labels(2, 1) = "LabelRow2Col1": labels(2, 2) = "LabelRow2Col2": labels(2, 3) = "LabelRow2Col3": labels(2, 4) = "LabelRow2Col4"
+    labels(3, 1) = "LabelRow3Col1": labels(3, 2) = "LabelRow3Col2": labels(3, 3) = "LabelRow3Col3": labels(3, 4) = "LabelRow3Col4"
+End Sub
+
+Private Sub TextBox58_Change()
+
+End Sub
+
+Private Sub TextBox68_Change()
+
+End Sub
+
+Private Sub UserForm_Initialize()
+    Set searchResults = New Collection
+    InitializeListBox
+
+
+    TextBox51.Value = Slash(Shamsi())
+    ComboBox74.List = Sheet1.Range("AB2:AB12").Value
+    ComboBox75.List = Sheet1.Range("AG2:AG12").Value
+    Load_Machine_Values_From_Sheet14
+End Sub
+
+Private Sub InitializeListBox()
+    With ListBoxResults
+        .Clear
+        .ColumnCount = 7 ' تعداد ستون‌ها (A,B,C,D,J,K,L)
+        .ColumnWidths = "100;100;100;150;150;150;150"
+        .Font.name = "Tahoma"
+        .Font.Size = 12
+        .TextAlign = fmTextAlignLeft
+
+        ' افزودن سرستون‌ها
+        .AddItem
+        .List(0, 0) = "کد"
+        .List(0, 1) = "متراژ"
+        .List(0, 2) = "وزن"
+        .List(0, 3) = "نوع جنس"
+        .List(0, 4) = "همبافت چله"
+        .List(0, 5) = "همبافت پود"
+        .List(0, 6) = "شماره چله"
+
+        .Font.Bold = True
+        .BackColor = RGB(240, 230, 200)
+    End With
+End Sub
+
+Private Sub CommandButton27_Click()
+
+    Dim searchValue As String
+    Dim lastRow As Long
+    Dim i As Long
+    Dim rowData(1 To 7) As Variant
+    Dim ws As Worksheet
+    Dim searchCode As String
+    Dim foundCell As Range
+    Dim isDuplicate As Boolean
+
+    Set ws = Sheet1
+    searchCode = Trim(Me.TextBox49.Value)
+  '==================کنترل تکد تکراري در ليست باکس=================
+  '================================================================
+ If ComboBox74.Value = "" Then
+        MsgBox "لطفاً نام مشتري  را وارد نماييد"
+        ComboBox74.SetFocus
+        Exit Sub
+    End If
+
+    If TextBox50.Value = "" Then
+        MsgBox "لطفاً شماره فاکتور   را وارد نماييد"
+        TextBox50.SetFocus
+        Exit Sub
+    End If
+
+
+    ' دريافت مقدار از TextBox49
+    searchValue = Trim(Me.TextBox49.Value)
+
+    ' بررسي خالي نبودن مقدار
+    If searchValue = "" Then
+        MsgBox "لطفاً کد را وارد نماييد", vbExclamation, "ورودي خالي"
+        Exit Sub
+    End If
+
+    ' بررسي وجود آيتم تکراري در ليست باکس (از سطر دوم به بعد)
+    For i = 1 To Me.ListBoxResults.listCount - 1
+        If Me.ListBoxResults.List(i, 0) = searchValue Then
+            MsgBox "کد " & searchValue & " تکراري است!" & vbCrLf & "لطفاً کد جديدي وارد نماييد", vbCritical, "خطا: کد تکراري"
+            Me.TextBox49.Value = ""  ' پاک کردن مقدار تکراري
+            Me.TextBox49.SetFocus    ' بازگشت فوکوس به TextBox
+            'Exit Sub                ' توقف اجراي برنامه
+        End If
+    Next i
+
+    i = 0
+  '================================================================
+    If searchCode = "" Then
+        MsgBox "لطفاً کد را وارد کنيد", vbExclamation
+        Me.TextBox49.SetFocus
+        Exit Sub
+    End If
+
+    ' جستجو در ستون A
+    Set foundCell = ws.Columns("A").Find(What:=searchCode, LookIn:=xlValues, LookAt:=xlWhole)
+
+    If Not foundCell Is Nothing Then
+        ' بررسي مقدار ستون N
+        If ws.Cells(foundCell.Row, "N").Value <> "" Then
+            MsgBox "اين طاقه در فاکتور (" & ws.Cells(foundCell.Row, "N").Value & ") ثبت شده است", vbInformation
+            Me.TextBox49.SetFocus
+            Me.TextBox49.SelStart = 0
+            Me.TextBox49.SelLength = Len(Me.TextBox49.text)
+            Exit Sub
+        End If
+    End If
+
+    searchValue = Trim(Me.TextBox49.text)
+    If searchValue = "" Then
+        MsgBox "لطفا مقداري براي جستجو وارد کنيد.", vbExclamation
+        Exit Sub
+    End If
+
+    lastRow = ws.Cells(ws.Rows.Count, "A").End(xlUp).Row
+
+    ' آماده‌سازي ليست‌باکس
+    If Me.ListBoxResults.listCount = 0 Then
+        Me.ListBoxResults.Clear
+        Me.ListBoxResults.ColumnCount = 7
+        Me.ListBoxResults.ColumnWidths = "80;80;80;80;80;80;80"
+        Me.ListBoxResults.AddItem "A      B      C      D      J      K      L"
+    End If
+
+
+
+    ' جستجو و افزودن داده‌ها
+   For i = 2 To lastRow
+    If ws.Cells(i, "A").Value = searchValue Then
+        rowData(1) = ws.Cells(i, "A").Value
+        rowData(2) = ws.Cells(i, "B").Value
+        rowData(3) = ws.Cells(i, "D").Value
+        rowData(4) = ws.Cells(i, "J").Value
+        rowData(5) = ws.Cells(i, "K").Value
+        rowData(6) = ws.Cells(i, "L").Value
+        rowData(7) = ws.Cells(i, "M").Value
+
+        ' تبديل مقدار فعلي ليبل به عدد و جمع با مقدار جديد
+        Dim currentMeterage As Double
+        Dim currentWeight As Double
+
+        ' اگر ليبل خالي است يا مقدار عددي ندارد، از صفر شروع کن
+        If IsNumeric(Label130.Caption) Then
+            currentMeterage = CDbl(Label130.Caption)
+        Else
+            currentMeterage = 0
+        End If
+
+        If IsNumeric(Label131.Caption) Then
+            currentWeight = CDbl(Label131.Caption)
+        Else
+            currentWeight = 0
+        End If
+
+        ' جمع مقادير با بررسي عددي بودن
+        If IsNumeric(ws.Cells(i, "B").Value) Then
+            currentMeterage = currentMeterage + CDbl(ws.Cells(i, "B").Value)
+        End If
+
+        If IsNumeric(ws.Cells(i, "D").Value) Then
+            currentWeight = currentWeight + CDbl(ws.Cells(i, "D").Value)
+        End If
+
+        ' نمايش مقادير با فرمت مناسب
+'        Label130.Caption = Format(currentMeterage, "0.00")
+'        Label131.Caption = Format(currentWeight, "0.00")
+'    End If
+
+
+            Me.ListBoxResults.AddItem
+            Dim newIndex As Long
+            newIndex = Me.ListBoxResults.listCount - 1
+
+            Dim colIndex As Long
+            For colIndex = 0 To 6
+                Me.ListBoxResults.List(newIndex, colIndex) = rowData(colIndex + 1)
+            Next colIndex
+
+        End If
+    Next i
+'===========================================
+ Dim totalMeterage As Double
+    Dim totalWeight As Double
+    Dim rollCount As Long
+    Me.Frame44.Visible = True
+
+    ' اگر ليست داده ندارد
+    If Me.ListBoxResults.listCount <= 1 Then
+        Exit Sub
+    End If
+
+    ' محاسبه خلاصه
+    Calc_ListBox_Summary Me.ListBoxResults, totalMeterage, totalWeight, rollCount
+
+    ' نمايش در ليبل‌ها
+    Me.Label130.Caption = Format(totalMeterage, "#,##0.00") ' متراژ
+    Me.Label131.Caption = Format(totalWeight, "#,##0.00")  ' وزن
+    Me.Label145.Caption = rollCount                        ' تعداد طاق
+
+'===========================================
+
+    TextBox49.text = ""
+    TextBox49.SetFocus
+
+End Sub
+
+
+
+
+
+
+
+' تابع تبديل آرايه به متن جدولي
+Private Function ArrayToTextTable(dataArray As Variant) As String
+    Dim i As Long, j As Long
+    Dim colWidths() As Integer
+    Dim result As String
+    Dim line As String
+
+    ' محاسبه عرض ستون‌ها
+    ReDim colWidths(1 To UBound(dataArray, 2))
+    For j = 1 To UBound(dataArray, 2)
+        colWidths(j) = Len(dataArray(1, j))
+        For i = 1 To UBound(dataArray, 1)
+            If Len(CStr(dataArray(i, j))) > colWidths(j) Then
+                colWidths(j) = Len(CStr(dataArray(i, j)))
+            End If
+        Next i
+        colWidths(j) = colWidths(j) + 2 ' اضافه کردن فضاي خالي
+    Next j
+
+    ' ساخت جدول
+    For i = 1 To UBound(dataArray, 1)
+        line = ""
+        For j = 1 To UBound(dataArray, 2)
+            line = line & "| " & PadRight(CStr(dataArray(i, j)), colWidths(j)) & " "
+        Next j
+        line = line & "|" & vbCrLf
+
+        ' اضافه کردن خط جداکننده براي سرستون‌ها
+        If i = 1 Then
+            Dim separator As String
+            separator = ""
+            For j = 1 To UBound(dataArray, 2)
+                separator = separator & "+" & String(colWidths(j) + 2, "-")
+            Next j
+            separator = separator & "+" & vbCrLf
+            result = result & separator
+        End If
+
+        result = result & line
+
+        ' اضافه کردن خط جداکننده بعد از سرستون‌ها
+        If i = 1 Then
+            result = result & separator
+        End If
+    Next i
+
+    ArrayToTextTable = result
+End Function
+
+' تابع کمکي براي پر کردن متن با فاصله از راست
+Private Function PadRight(text As String, length As Integer) As String
+    If Len(text) > length Then
+        PadRight = Left(text, length)
+    Else
+        PadRight = text & Space(length - Len(text))
+    End If
+End Function
+
+
+
+
+
+
+
+'' دکمه چاپ به PDF (همانند قبل)
+'Private Sub CommandButtonPrint_Click()
+'    ' ... کد اين تابع بدون تغيير مي‌ماند ...
+'End Sub
+
+Private Sub CommandButton6_Click()
+ Sheets("Sheet2").Select
+    Range("A1:B9").Select
+    ActiveWindow.SelectedSheets.PrintOut From:=1, To:=32766, Copies:=2, _
+        Collate:=True, IgnorePrintAreas:=False
+
+     ActiveWorkbook.Save
+      ' ادرس فايل مقصد
+'    destFilePath = "E:\salon\data.xlsx"
+
+    ' تنظيم شيت مبدا
+    Set sourceWS = ThisWorkbook.Sheets("Sheet1")
+
+    ' باز کردن فايل اکسل مقصد
+'++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++                                                                                                                                                             Set destWB = Workbooks.Open(destFilePath)
+    Set destWS = destWB.Sheets("Sheet1")
+
+    ' تعيين محدوده اطلاعات در شيت ميدا
+    Set sourceRange = sourceWS.UsedRange
+
+    ' تعيين محدوده مقصد براي قرار دادن اطلاعات
+    Set destRange = destWS.Range("A1")
+
+    ' کپي شيت مبدا به شيت مقصد
+    sourceRange.Copy Destination:=destRange
+
+    ' ذخيره و بستن فايل مقصد
+    destWB.Save
+    destWB.Close
+
+    'نمايش پيام موفقيت
+   ' MsgBox "اطلاعات ثبت شد!", vbInformation
+
+End Sub
+
+
+
+
+
+
+Private Sub CommandButton8_Click()
+Dim i As Integer
+Dim j As Integer
+Dim A As Integer
+Dim b As Integer
+Dim lastRow11 As Long
+Sheet11.Select
+'==============چک خالي نبودن وروديها=========
+    If TextBox21.Value = "" Then
+     MsgBox "مقدار وزن نمي تواند خالي باشد", vbExclamation
+        Exit Sub
+    End If
+If ComboBox56.Value = "" Then
+     MsgBox "شماره ماشين نمي تواند خالي باشد", vbExclamation
+        Exit Sub
+    End If
+    If ComboBox57.Value = "" Then
+     MsgBox "همبافت  نمي تواند خالي باشد", vbExclamation
+        Exit Sub
+    End If
+
+If ComboBox58.Value = "" Then
+     MsgBox "شماره چله   نمي تواند خالي باشد", vbExclamation
+        Exit Sub
+    End If
+
+
+'====================================================
+
+  lastRow11 = Sheet11.Cells(Sheet11.Rows.Count, "c").End(xlUp).Row + 1
+  For i = lastRow11 To 2 Step -1
+  If Sheet11.Range("e" & i).Value = "" Then
+
+
+
+Sheet11.Range("C" & i).Value = ComboBox56.text 'نوع نخ
+Sheet11.Range("d" & i).Value = ComboBox57.text 'همبافت نخ
+Sheet11.Range("F" & i).Value = ComboBox58.text
+Sheet11.Range("j" & i).Value = ComboBox68.text ' نام مشتري
+
+Sheet11.Range("B" & i).Value = TB22.text ' شماره فاکتور
+Sheet11.Range("E" & i).Value = TextBox21.text ' وزن نخ
+Sheet11.Range("b" & i).Value = Slash(Shamsi()) ' تاريخ روز
+
+
+Sheet11.Range("G" & i).Value = Now() ' شماره همبافت
+Sheet11.Range("H" & i).Value = Now()
+Sheet11.Range("I" & i).Value = "ورودي"
+
+ Exit For
+ End If
+Next i
+
+ '============================ثبت اطلاعات در تيبل sheet14===========================
+   Dim wsSource As Worksheet
+    Dim wsTarget As Worksheet
+    Dim lastRow As Long
+    Dim Y As Long
+    Dim tbl As ListObject
+    Dim dict As Object
+    Dim key As String
+
+    ' تعريف شيت مبدا و مقصد
+    Set wsSource = Sheet12
+    Set wsTarget = Sheet14
+
+    ' تعريف جدول (تيبل) در شيت مقصد
+    On Error Resume Next
+    Set tbl = wsTarget.ListObjects(1) ' اولين جدول در شيت
+    On Error GoTo 0
+
+    ' اگر جدول وجود نداشت، پيام خطا نمايش داده شود
+    If tbl Is Nothing Then
+        MsgBox "جدولي در شيت مقصد يافت نشد!", vbExclamation
+        Exit Sub
+    End If
+
+    ' ايجاد Dictionary براي ذخيره مقادير موجود در ستون A جدول
+    Set dict = CreateObject("Scripting.Dictionary")
+
+    ' پر کردن Dictionary با مقادير موجود در ستون A جدول
+    If Not tbl.DataBodyRange Is Nothing Then
+        For Y = 1 To tbl.DataBodyRange.Rows.Count
+            key = CStr(tbl.DataBodyRange.Cells(Y, 1).Value)
+            If Not dict.Exists(key) Then
+                dict.add key, 1
+            End If
+        Next Y
+    End If
+
+    ' پيدا کردن آخرين سطر داراي داده در شيت مبدا
+    lastRow = wsSource.Cells(wsSource.Rows.Count, "A").End(xlUp).Row
+
+    ' حلقه از سطر 3 تا آخرين سطر داراي داده
+    For Y = 3 To lastRow
+        ' بررسي آيا سلول در ستون K (ستون 11) مقداري دارد
+        If Not IsEmpty(wsSource.Cells(Y, 11).Value) Then
+            ' بررسي تکراري نبودن مقدار ستون 7 (که در ستون A جدول قرار مي‌گيرد)
+            key = CStr(wsSource.Cells(Y, 7).Value)
+
+            If Not dict.Exists(key) Then
+                ' افزودن سطر جديد به جدول
+                Dim newRow As ListRow
+                Set newRow = tbl.ListRows.add
+
+                ' پر کردن داده‌ها در سطر جديد جدول
+                With newRow
+                    ' ستون A جدول (مقدار ستون 7 از شيت مبدا)
+                    .Range(1) = wsSource.Cells(Y, 7).Value
+
+                    ' ستون B جدول (مقدار ستون 8 از شيت مبدا)
+                    .Range(2) = wsSource.Cells(Y, 8).Value
+
+                    ' ستون C جدول (مقدار ستون 11 از شيت مبدا)
+                    .Range(3) = wsSource.Cells(Y, 11).Value
+                End With
+
+                ' اضافه کردن مقدار جديد به Dictionary
+                dict.add key, 1
+            End If
+        End If
+    Next Y
+
+   ' MsgBox "عمليات کپي با موفقيت انجام شد و از درج داده‌هاي تکراري جلوگيري شد!", vbInformation
+
+'3333333333333333333333333
+
+
+ Dim wssData As Worksheet, wssTable As Worksheet
+    Dim lastRowData As Long, lastRowTable As Long
+    Dim ii As Long, jj As Long
+    Dim billNo As String, car As String
+    Dim SumMValue As Double, countValue As Long
+    Dim SumWValue As Double
+    Dim Sumnakh As Double
+    ' تنظيم شيت‌ها
+    Set wssData = Sheet14
+    Set wssTable = Sheet1
+     Set wssNakh = Sheet11
+
+    ' پيدا کردن آخرين سطر داده
+    lastRowData = wssData.Cells(wssData.Rows.Count, "A").End(xlUp).Row
+    lastRowTable = wssTable.Cells(wssTable.Rows.Count, "A").End(xlUp).Row
+    lastRowNakh = wssNakh.Cells(wssNakh.Rows.Count, "F").End(xlUp).Row
+
+    Application.ScreenUpdating = False
+    Application.Calculation = xlCalculationManual
+
+    ' حلقه بر روي تمام سطرهاي داده در شيت ورود چله
+    For ii = 2 To lastRowData
+        billNo = wssData.Cells(ii, "A").Value
+        car = wssData.Cells(ii, "C").Value
+        SumWValue = 0
+        SumMValue = 0
+        countValue = 0
+        Sumnakh = 0
+
+        ' حلقه بر روي داده‌هاي شيت Table
+        For jj = 2 To lastRowTable
+            If wssTable.Cells(jj, "M").Value = billNo And _
+               wssTable.Cells(jj, "C").Value = car Then
+                SumWValue = SumWValue + wssTable.Cells(jj, "D").Value
+                SumMValue = SumMValue + wssTable.Cells(jj, "B").Value
+                countValue = countValue + 1
+
+
+
+
+            End If
+        Next jj
+
+        For jj = 2 To lastRowNakh
+            If wssNakh.Cells(jj, "F").Value = billNo And _
+               wssNakh.Cells(jj, "C").Value = car Then
+
+
+                   Sumnakh = Sumnakh + wssNakh.Cells(jj, "e").Value
+
+                  End If
+          Next jj
+
+        ' قرار دادن مقادير محاسبه شده در سلول‌ها
+        wssData.Cells(ii, "F").Value = SumWValue
+        m = SumWValue * wssTable.Range("AO2").Value / 100
+        ' Mمقدار پود بر حصب درصد
+
+        wssData.Cells(ii, "G").Value = m
+
+
+        wssData.Cells(ii, "E").Value = SumMValue
+        w = SumWValue * wssTable.Range("AN2").Value / 100 ' w   مقدار تار بر حسب درصد
+
+        wssData.Cells(ii, "H").Value = w
+
+        s = wssData.Cells(ii, "B").Value - w
+
+        wssData.Cells(ii, "I").Value = s
+
+        wssData.Cells(ii, "D").Value = countValue
+
+
+         wssData.Cells(ii, "j").Value = Sumnakh
+         wssData.Cells(ii, "k").Value = wssData.Cells(ii, "j").Value - wssData.Cells(ii, "G").Value
+
+    Next ii
+'================================کم کردن نخ از موجودي================
+
+    Dim wsnakh As Worksheet
+    Dim lastRowkh As Long
+    Dim combo57 As String, combo68 As String
+    Dim tb21Value As Double
+    Dim matchFound As Boolean
+    Dim f As Long
+    Dim samkh As Double
+    ' تنظيمات اوليه
+    Set wsnakh = Sheet22 ' نام شيت را تغيير دهيد
+
+
+    ' پيدا کردن آخرين سطر داراي داده
+    lastRowkh = wsnakh.Cells(wsnakh.Rows.Count, "A").End(xlUp).Row
+
+    ' جستجو در داده‌ها (ستون A و B مقايسه، ستون D براي محاسبه، ستون G براي نتيجه)
+    matchFound = False
+    For f = 2 To lastRowkh ' فرض شده سطر اول عنوان دارد
+'         If wsnakh.Cells(f, 1).Value = ComboBox57.Value Then
+
+        If wsnakh.Cells(f, 1).Value = ComboBox57.Value And _
+           wsnakh.Cells(f, 2).Value = ComboBox68.Value Then
+
+            ' محاسبه و ذخيره نتيجه
+
+           samkh = CDbl(wsnakh.Cells(f, 6).Value) + TextBox21.Value
+            wsnakh.Cells(f, 6).Value = samkh
+            wsnakh.Cells(f, 7).Value = CDbl(wsnakh.Cells(f, 4).Value) + CDbl(wsnakh.Cells(f, 5).Value) - samkh
+            matchFound = True
+            Exit For
+        End If
+    Next f
+
+    ' پيام در صورت عدم يافتن تطابق
+    If Not matchFound Then
+        MsgBox "هيچ رکوردي با مقادير وارد شده يافت نشد.", vbExclamation, "خطا"
+'    Else
+'        MsgBox "محاسبه با موفقيت انجام شد.", vbInformation, "تاييد"
+    End If
+
+'====================================================
+   Dim searchValue As String
+'    Dim lastRow As Long
+'    Dim i As Long
+    Dim rowData(1 To 7) As Variant
+'    Dim ws As Worksheet
+    Dim searchCode As String
+    Dim foundCell As Range
+    Dim isDuplicate As Boolean
+    i = 0
+
+    Set wsN = Sheet22
+'==================================================
+         Me.ListBoxnakh.Clear
+'        For i = .listCount - 1 To 1 Step -1
+'                    .RemoveItem i
+'                Next i
+'==================================================
+i = 0
+
+
+    lastRow = wsN.Cells(wsN.Rows.Count, "A").End(xlUp).Row
+
+    ' آماده‌سازي ليست‌باکس
+    If Me.ListBoxnakh.listCount = 0 Then
+        Me.ListBoxnakh.Clear
+        Me.ListBoxnakh.ColumnCount = 5
+        Me.ListBoxnakh.ColumnWidths = "150;150;150;150;150;150"
+'        Me.ListBoxnakh.AddItem "A      B      C      D      E      F      G"
+    End If
+
+
+
+    ' جستجو و افزودن داده‌ها
+   For i = 1 To lastRow
+    If wsN.Cells(i, "G").Value > 0 Then
+        rowData(1) = wsN.Cells(i, "A").Value
+        rowData(2) = wsN.Cells(i, "B").Value
+        rowData(3) = wsN.Cells(i, "C").Value
+ '       rowData(4) = wsN.Cells(i, "D").Value
+'        rowData(5) = wsN.Cells(i, "E").Value
+        rowData(4) = wsN.Cells(i, "F").Value
+        rowData(5) = wsN.Cells(i, "G").Value
+
+
+
+
+            Me.ListBoxnakh.AddItem
+            Dim newIndex As Long
+            newIndex = Me.ListBoxnakh.listCount - 1
+
+'            Dim colIndex As Long
+            For colIndex = 0 To 6
+                Me.ListBoxnakh.List(newIndex, colIndex) = rowData(colIndex + 1)
+            Next colIndex
+
+        End If
+    Next i
+
+
+'==================================================
+    Application.Calculation = xlCalculationAutomatic
+    Application.ScreenUpdating = True
+
+ComboBox56.text = ""
+ ComboBox57.text = ""
+ ComboBox58.text = ""
+ Label146.Caption = ""
+ Label147.Visible = False
+ TextBox21.text = ""
+
+ '================================================================
+ Sheet15.Select
+    ActiveWorkbook.RefreshAll
+ MsgBox "اطلاعات ثبت شد!", vbInformation
+ActiveWorkbook.Save
+End Sub
+
+Private Sub CommandButton9_Click()
+Dim i As Integer
+Dim j As Integer
+Dim A As Integer
+Dim b As Integer
+Dim lastRow11 As Long
+Sheet11.Select
+'==============چک خالي نبودن وروديها=========
+    If TB23.Value = "" Then
+     MsgBox "مقدار وزن نمي تواند خالي باشد", vbExclamation
+        Exit Sub
+    End If
+If ComboBox59.Value = "" Then
+     MsgBox "شماره ماشين نمي تواند خالي باشد", vbExclamation
+        Exit Sub
+    End If
+    If ComboBox60.Value = "" Then
+     MsgBox "همبافت  نمي تواند خالي باشد", vbExclamation
+        Exit Sub
+    End If
+
+If ComboBox61.Value = "" Then
+     MsgBox "شماره چله   نمي تواند خالي باشد", vbExclamation
+        Exit Sub
+    End If
+
+
+'====================================================
+lastRow11 = Sheet11.Cells(Sheet11.Rows.Count, "c").End(xlUp).Row + 1
+  For i = lastRow11 To 2 Step -1
+  If Sheet11.Range("e" & i).Value = "" Then
+
+
+
+Sheet11.Range("C" & i).Value = ComboBox59.text 'نوع نخ
+Sheet11.Range("d" & i).Value = ComboBox60.text
+Sheet11.Range("F" & i).Value = ComboBox61.text
+Sheet11.Range("j" & i).Value = ComboBox69.text ' نام مشتري
+
+Sheet11.Range("B" & i).Value = TB22.text ' شماره فاکتور
+Sheet11.Range("E" & i).Value = TB23.text * -1 ' وزن نخ
+Sheet11.Range("b" & i).Value = Slash(Shamsi()) ' تاريخ روز
+
+
+Sheet11.Range("G" & i).Value = Now() ' شماره همبافت
+Sheet11.Range("H" & i).Value = Now()
+Sheet11.Range("I" & i).Value = "خروجي"
+
+ Exit For
+ End If
+Next i
+
+ '============================ثبت اطلاعات در تيبل sheet14===========================
+   Dim wsSource As Worksheet
+    Dim wsTarget As Worksheet
+    Dim lastRow As Long
+    Dim Y As Long
+    Dim tbl As ListObject
+    Dim dict As Object
+    Dim key As String
+
+    ' تعريف شيت مبدا و مقصد
+    Set wsSource = Sheet12
+    Set wsTarget = Sheet14
+
+    ' تعريف جدول (تيبل) در شيت مقصد
+    On Error Resume Next
+    Set tbl = wsTarget.ListObjects(1) ' اولين جدول در شيت
+    On Error GoTo 0
+
+    ' اگر جدول وجود نداشت، پيام خطا نمايش داده شود
+    If tbl Is Nothing Then
+        MsgBox "جدولي در شيت مقصد يافت نشد!", vbExclamation
+        Exit Sub
+    End If
+
+    ' ايجاد Dictionary براي ذخيره مقادير موجود در ستون A جدول
+    Set dict = CreateObject("Scripting.Dictionary")
+
+    ' پر کردن Dictionary با مقادير موجود در ستون A جدول
+    If Not tbl.DataBodyRange Is Nothing Then
+        For Y = 1 To tbl.DataBodyRange.Rows.Count
+            key = CStr(tbl.DataBodyRange.Cells(Y, 1).Value)
+            If Not dict.Exists(key) Then
+                dict.add key, 1
+            End If
+        Next Y
+    End If
+
+    ' پيدا کردن آخرين سطر داراي داده در شيت مبدا
+    lastRow = wsSource.Cells(wsSource.Rows.Count, "A").End(xlUp).Row
+
+    ' حلقه از سطر 3 تا آخرين سطر داراي داده
+    For Y = 3 To lastRow
+        ' بررسي آيا سلول در ستون K (ستون 11) مقداري دارد
+        If Not IsEmpty(wsSource.Cells(Y, 11).Value) Then
+            ' بررسي تکراري نبودن مقدار ستون 7 (که در ستون A جدول قرار مي‌گيرد)
+            key = CStr(wsSource.Cells(Y, 7).Value)
+
+            If Not dict.Exists(key) Then
+                ' افزودن سطر جديد به جدول
+                Dim newRow As ListRow
+                Set newRow = tbl.ListRows.add
+
+                ' پر کردن داده‌ها در سطر جديد جدول
+                With newRow
+                    ' ستون A جدول (مقدار ستون 7 از شيت مبدا)
+                    .Range(1) = wsSource.Cells(Y, 7).Value
+
+                    ' ستون B جدول (مقدار ستون 8 از شيت مبدا)
+                    .Range(2) = wsSource.Cells(Y, 8).Value
+
+                    ' ستون C جدول (مقدار ستون 11 از شيت مبدا)
+                    .Range(3) = wsSource.Cells(Y, 11).Value
+                End With
+
+                ' اضافه کردن مقدار جديد به Dictionary
+                dict.add key, 1
+            End If
+        End If
+    Next Y
+
+  '  MsgBox "عمليات کپي با موفقيت انجام شد و از درج داده‌هاي تکراري جلوگيري شد!", vbInformation
+
+'3333333333333333333333333
+
+
+ Dim wssData As Worksheet, wssTable As Worksheet
+    Dim lastRowData As Long, lastRowTable As Long
+    Dim ii As Long, jj As Long
+    Dim billNo As String, car As String
+    Dim SumMValue As Double, countValue As Long
+    Dim SumWValue As Double
+    Dim Sumnakh As Double
+    ' تنظيم شيت‌ها
+    Set wssData = Sheet14
+    Set wssTable = Sheet1
+     Set wssNakh = Sheet11
+
+    ' پيدا کردن آخرين سطر داده
+    lastRowData = wssData.Cells(wssData.Rows.Count, "A").End(xlUp).Row
+    lastRowTable = wssTable.Cells(wssTable.Rows.Count, "A").End(xlUp).Row
+    lastRowNakh = wssNakh.Cells(wssNakh.Rows.Count, "F").End(xlUp).Row
+
+    Application.ScreenUpdating = False
+    Application.Calculation = xlCalculationManual
+
+    ' حلقه بر روي تمام سطرهاي داده در شيت ورود چله
+    For ii = 2 To lastRowData
+        billNo = wssData.Cells(ii, "A").Value
+        car = wssData.Cells(ii, "C").Value
+        SumWValue = 0
+        SumMValue = 0
+        countValue = 0
+        Sumnakh = 0
+
+        ' حلقه بر روي داده‌هاي شيت Table
+        For jj = 2 To lastRowTable
+            If wssTable.Cells(jj, "M").Value = billNo And _
+               wssTable.Cells(jj, "C").Value = car Then
+                SumWValue = SumWValue + wssTable.Cells(jj, "D").Value
+                SumMValue = SumMValue + wssTable.Cells(jj, "B").Value
+                countValue = countValue + 1
+
+
+
+
+            End If
+        Next jj
+
+        For jj = 2 To lastRowNakh
+            If wssNakh.Cells(jj, "F").Value = billNo And _
+               wssNakh.Cells(jj, "C").Value = car Then
+
+
+                   Sumnakh = Sumnakh + wssNakh.Cells(jj, "e").Value
+
+                  End If
+          Next jj
+
+        ' قرار دادن مقادير محاسبه شده در سلول‌ها
+        wssData.Cells(ii, "F").Value = SumWValue
+        m = SumWValue * wssTable.Range("AO2").Value
+
+        wssData.Cells(ii, "G").Value = m
+
+
+        wssData.Cells(ii, "E").Value = SumMValue
+        w = SumWValue * wssTable.Range("AN2").Value
+
+        wssData.Cells(ii, "H").Value = w
+
+        s = wssData.Cells(ii, "B").Value - w
+
+        wssData.Cells(ii, "I").Value = s
+
+        wssData.Cells(ii, "D").Value = countValue
+
+
+         wssData.Cells(ii, "j").Value = Sumnakh
+         wssData.Cells(ii, "k").Value = wssData.Cells(ii, "j").Value - wssData.Cells(ii, "G").Value
+
+    Next ii
+
+
+   ' MsgBox "محاسبات با موفقيت انجام شد و مقادير در سلول‌ها قرار داده شدند.", vbInformation
+'====================================================
+   Dim searchValue As String
+'    Dim lastRow As Long
+'    Dim i As Long
+    Dim rowData(1 To 7) As Variant
+'    Dim ws As Worksheet
+    Dim searchCode As String
+    Dim foundCell As Range
+    Dim isDuplicate As Boolean
+    i = 0
+
+    Set wsN = Sheet22
+'==================================================
+         Me.ListBoxnakh.Clear
+'        For i = .listCount - 1 To 1 Step -1
+'                    .RemoveItem i
+'                Next i
+'==================================================
+i = 0
+
+
+    lastRow = wsN.Cells(wsN.Rows.Count, "A").End(xlUp).Row
+
+    ' آماده‌سازي ليست‌باکس
+    If Me.ListBoxnakh.listCount = 0 Then
+        Me.ListBoxnakh.Clear
+        Me.ListBoxnakh.ColumnCount = 5
+        Me.ListBoxnakh.ColumnWidths = "150;150;150;150;150;150"
+'        Me.ListBoxnakh.AddItem "A      B      C      D      E      F      G"
+    End If
+
+
+
+    ' جستجو و افزودن داده‌ها
+   For i = 1 To lastRow
+    If wsN.Cells(i, "G").Value > 0 Then
+        rowData(1) = wsN.Cells(i, "A").Value
+        rowData(2) = wsN.Cells(i, "B").Value
+        rowData(3) = wsN.Cells(i, "C").Value
+ '       rowData(4) = wsN.Cells(i, "D").Value
+'        rowData(5) = wsN.Cells(i, "E").Value
+        rowData(4) = wsN.Cells(i, "F").Value
+        rowData(5) = wsN.Cells(i, "G").Value
+
+
+
+
+            Me.ListBoxnakh.AddItem
+            Dim newIndex As Long
+            newIndex = Me.ListBoxnakh.listCount - 1
+
+'            Dim colIndex As Long
+            For colIndex = 0 To 6
+                Me.ListBoxnakh.List(newIndex, colIndex) = rowData(colIndex + 1)
+            Next colIndex
+
+        End If
+    Next i
+
+
+'==================================================
+
+
+'33333333333333زياد کردن مقدار موجودي نخ333333333333
+  Dim wsnakh As Worksheet
+    Dim lastRowkh As Long
+    Dim combo57 As String, combo68 As String
+    Dim tb21Value As Double
+    Dim matchFound As Boolean
+    Dim f As Long
+
+    ' تنظيمات اوليه
+    Set wsnakh = Sheet22 ' نام شيت را تغيير دهيد
+
+
+    ' پيدا کردن آخرين سطر داراي داده
+    lastRowkh = wsnakh.Cells(wsnakh.Rows.Count, "A").End(xlUp).Row
+
+    ' جستجو در داده‌ها (ستون A و B مقايسه، ستون D براي محاسبه، ستون G براي نتيجه)
+    matchFound = False
+    For f = 2 To lastRowkh ' فرض شده سطر اول عنوان دارد
+        If wsnakh.Cells(f, 1).Value = ComboBox60.Value And _
+           wsnakh.Cells(f, 2).Value = ComboBox69.Value Then
+
+            matchFound = True
+            ' محاسبه و ذخيره نتيجه
+           samkh = wsnakh.Cells(f, 5).Value + TB23.Value
+           wsnakh.Cells(f, 5).Value = samkh
+            wsnakh.Cells(f, 7).Value = CDbl(wsnakh.Cells(f, 4).Value) - wsnakh.Cells(f, 6).Value + samkh
+            matchFound = True
+            Exit For
+        End If
+    Next f
+
+    ' پيام در صورت عدم يافتن تطابق
+    If Not matchFound Then
+        MsgBox "هيچ رکوردي با مقادير وارد شده يافت نشد.", vbExclamation, "خطا"
+'    Else
+'        MsgBox "محاسبه با موفقيت انجام شد.", vbInformation, "تاييد"
+    End If
+'3333333333333333333333
+ ComboBox59.text = ""
+ ComboBox60.text = ""
+ ComboBox61.text = ""
+
+
+ TB23.text = ""
+ Application.Calculation = xlCalculationAutomatic
+    Application.ScreenUpdating = True
+
+ Sheet15.Select
+    ActiveWorkbook.RefreshAll
+ MsgBox "اطلاعات ثبت شد!", vbInformation
+ActiveWorkbook.Save
+End Sub
+
+
+
+Private Sub Frame1_Click()
+
+End Sub
+
+Private Sub Frame3_Click()
+
+End Sub
+
+Private Sub Frame4_Click()
+
+End Sub
+
+Private Sub Frame5_Click()
+
+End Sub
+
+Private Sub Frame8_Click()
+'Dim i As Integer
+'Dim j As Integer
+'Dim a As Integer
+'Dim b As Integer
+'Sheet11.Select
+'  For i = 3 To 200
+'  If Sheet11.Range("e" & i).value = "" Then
+'
+'
+'
+'Sheet11.Range("C" & i).value = ComboBox56.Text 'نوع نخ
+'Sheet11.Range("d" & i).value = ComboBox57.Text ' نام مشتري
+'Sheet11.Range("F" & i).value = ComboBox58.Text
+'
+'Sheet11.Range("B" & i).value = TB22.Text ' شماره فاکتور
+'Sheet11.Range("E" & i).value = TextBox21.Text ' وزن نخ
+'Sheet11.Range("b" & i).value = Slash(Shamsi()) ' تاريخ روز
+'
+'
+'Sheet11.Range("G" & i).value = Now() ' شماره همبافت
+'Sheet11.Range("H" & i).value = Now()
+'Sheet11.Range("I" & i).value = "ورودي"
+'
+' Exit For
+' End If
+'Next i
+' ComboBox56.Text = ""
+' ComboBox57.Text = ""
+' ComboBox58.Text = ""
+'
+' TB22.Text = ""
+' TextBox21.Text = ""
+'
+' MsgBox "اطلاعات ثبت شد!", vbInformation
+'ActiveWorkbook.Save
+End Sub
+
+Private Sub Frame9_Click()
+
+End Sub
+
+Private Sub Label18_Click()
+
+End Sub
+
+Private Sub Label25_Click()
+
+End Sub
+
+Private Sub Label27_Click()
+
+End Sub
+
+Private Sub Image1_BeforeDragOver(ByVal Cancel As MSForms.ReturnBoolean, ByVal Data As MSForms.DataObject, ByVal X As Single, ByVal Y As Single, ByVal DragState As MSForms.fmDragState, ByVal Effect As MSForms.ReturnEffect, ByVal Shift As Integer)
+
+
+
+
+Private Sub Image1_Click()
+    Dim ws As Worksheet
+    Dim nextRow As Long
+    Dim currentCode As Long
+   ' Dim shamsiDate As String
+    Dim currentTime As String
+   Dim findValue As String
+   Dim findRange As Range
+   Dim rowNumber As Long
+    ' انتخاب شيت فعال
+    Set ws = ThisWorkbook.Sheets(1)
+    '''''
+
+
+
+   ' nextRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row + 1
+
+    ' بررسي مقدار کد
+    If IsNumeric(TextBox1.Value) Then
+        currentCode = CLng(TextBox1.Value)
+    Else
+        MsgBox "لطفا يک کد معتبر وارد کنيد", vbExclamation
+        Exit Sub
+    End If
+
+
+    If TextBox2.Value = "" Then
+       MsgBox "مقادير ورودي خالي هستن", vbExclamation
+       TextBox2.SetFocus
+        Exit Sub
+       End If
+       If TextBox3.Value = "" Then
+       MsgBox "مقادير ورودي خالي هستن", vbExclamation
+       TextBox3.SetFocus
+        Exit Sub
+       End If
+       If TextBox4.Value = "" Then
+       MsgBox "مقادير ورودي خالي هستن", vbExclamation
+       TextBox4.SetFocus
+        Exit Sub
+       End If
+       '88888 چک کردن عددي بودن وروديها  888888
+   If TextBox10.Value = "" Then
+       MsgBox "مقادير همبافت چله خالي هستن", vbExclamation
+       TextBox2.SetFocus
+        Exit Sub
+       End If
+   If TextBox12.Value = "" Then
+       MsgBox "مقادير شماره چله خالي هستن", vbExclamation
+       TextBox2.SetFocus
+        Exit Sub
+       End If
+   If ComboBox62.Value = "" Then
+       MsgBox "مقادير همبافت پود خالي هستن", vbExclamation
+       TextBox2.SetFocus
+        Exit Sub
+       End If
+
+       If ComboBox67.Value = "" Then
+       MsgBox "مقادير نوع جنس خالي هستن", vbExclamation
+       TextBox2.SetFocus
+        Exit Sub
+       End If
+    ' بررسي اينکه مقادير حتماً عدد باشند
+    If Not IsNumericValue(TextBox2.Value) Then
+        MsgBox "مقدار << متراژ >> عدد نمي باشد", vbExclamation
+        TextBox2.SetFocus
+        Exit Sub
+    End If
+    If Not IsNumericValue(TextBox3.Value) Then
+        MsgBox "مقدار <<ماشين>> عدد نمي‌باشد", vbExclamation
+        TextBox3.SetFocus
+        Exit Sub
+    End If
+    If Not IsNumericValue(TextBox4.Value) Then
+    TextBox4.SetFocus
+        MsgBox "مقدار <<وزن>> عدد نمي‌باشد", vbExclamation
+        Exit Sub
+    End If
+
+
+'    Set ws = Sheet1
+'     Set ws2 = Sheet2
+    findValue = TextBox5.Value
+
+
+'    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim ws2 As Worksheet
+    Dim dataWorkbook As Workbook
+    Dim dataWs As Worksheet
+    Dim dataFilePath As String
+
+    ' Set the worksheets
+    Set ws = Sheet1
+    Set ws2 = Sheet2
+
+    ' Find the last row with data in column A
+    lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row + 1
+
+    ' Transfer values from TextBoxes and ComboBoxes to cells
+    ws.Cells(lastRow, 1).Value = TextBox1.Value ' Column A
+    ws.Cells(lastRow, 2).Value = TextBox2.Value ' Column B
+    ws.Cells(lastRow, 3).Value = TextBox3.Value ' Column C
+    ws.Cells(lastRow, 4).Value = TextBox4.Value ' Column D
+    ws.Cells(lastRow, 7).Value = Label6.Caption ' Column G
+    ws.Cells(lastRow, 8).Value = TextBox9.Value ' Column H
+    ws.Cells(lastRow, 11).Value = TextBox10.Value ' Column K
+    ws.Cells(lastRow, 13).Value = TextBox12.Value ' Column M
+    ws.Cells(lastRow, 9).Value = ComboBox1.Value ' Column I
+    ws.Cells(lastRow, 10).Value = ComboBox67.Value ' Column J
+    ws.Cells(lastRow, 12).Value = ComboBox62.Value ' Column L
+
+    ' Transfer values to cells B1 to B6 in Sheet2
+    ws2.Cells(2, 2).Value = TextBox1.Value ' B1
+    ws2.Cells(3, 2).Value = TextBox2.Value ' B2
+    ws2.Cells(4, 2).Value = TextBox4.Value ' B3
+    ws2.Cells(5, 2).Value = TextBox12.Value ' B4
+    ws2.Cells(6, 2).Value = ComboBox62.Value ' B5
+    ws2.Cells(7, 2).Value = TextBox10.Value ' B6
+    ws2.Cells(1, 1).Value = ComboBox65.Value
+
+    ws2.Cells(9, 1).Value = "*" & ws2.Cells(2, 2).Value & "*" ' B9
+
+    ' Add 1 to the value in TextBox1 and update TextBox2
+    TextBox1.Value = Val(TextBox1.Value) + 1
+
+'    ' Update LDtime label with current time (HH:MM:SS)
+'    LabelDateTime.Caption = DayWeek(Shamsi())
+'
+'    ' Update Label7 with current date
+'    Label7.Caption = Slash(Shamsi())
+
+    ' Record date in column F and time in column N
+    ws.Cells(lastRow, 5).Value = Slash(Shamsi()) ' Column F (تاريخ)
+    ws.Cells(lastRow, 6).Value = Time ' Column N (زمان)
+
+    ' Clear TextBoxes and ComboBoxes
+    TextBox2.Value = ""
+    TextBox3.Value = ""
+    TextBox4.Value = ""
+    TextBox9.Value = ""
+    TextBox10.Value = ""
+    TextBox12.Value = ""
+    ComboBox1.Value = ""
+    ComboBox62.Value = ""
+
+    ' Check if CheckBox2 is NOT checked
+    If Not CheckBox1.Value Then
+        ' Print Sheet2 twice
+        ws2.PrintOut Copies:=1, Collate:=True ' First print
+        ws2.PrintOut Copies:=1, Collate:=True ' Second print
+    End If
+
+    ' Save the last row of Sheet1 to data.xlsx
+    dataFilePath = ThisWorkbook.Path & "\data.xlsx" ' Path to data.xlsx in the same folder
+
+    ' Open data.xlsx
+    Set dataWorkbook = Workbooks.Open(dataFilePath)
+    Set dataWs = dataWorkbook.Sheets("Sheet1") ' Change "Sheet1" if the sheet name is different
+
+    ' Find the last row in data.xlsx
+    Dim dataLastRow As Long
+    dataLastRow = dataWs.Cells(dataWs.Rows.Count, 1).End(xlUp).Row + 1
+
+    ' Copy the last row from Sheet1 to data.xlsx
+    ws.Rows(lastRow).Copy Destination:=dataWs.Rows(dataLastRow)
+
+    ' Save and close data.xlsx
+    dataWorkbook.Save
+    dataWorkbook.Close
+
+    ' Save the current workbook
+    ThisWorkbook.Save
+   ';;;;;;;;;;;;;;;;;   ;چک باکس 2    ''''''''''''''
+          Sheet2.Range("A7").Value = "چله  همبافت"
+
+                If CheckBox2.Value = True Then
+                 ws.Range("K" & o).Value = "***چله غير همبافت***"
+
+               Sheet2.Range("A7").Value = "****چله غير همبافت****"
+
+
+                End If
+   ';;;;;;;;;;;;;;;;;   ;چک باکس 3    ''''''''''''''
+
+             Sheet2.Range("A8").Value = "پود  همبافت"
+
+                If CheckBox3.Value = True Then
+                 ws.Range("K" & o).Value = "***پود غير همبافت***"
+
+               Sheet2.Range("A8").Value = "****پود غير همبافت****"
+
+                End If
+    '''''''''''''''''''''''''''''''''''''''''''''''''''''
+    ''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''''
+    '''''''''''''''''''''''''قفل کردن هر خط''''''''''''''''''''''''
+  ' غيرفعال کردن محافظت از شيت (اگر قبلاً محافظت شده است)
+    ws.Unprotect Password:="YourPassword" ' اگر از پسورد استفاده کرده‌ايد، آن را وارد کنيد
+
+    ' باز کردن قفل تمام سلول‌هاي شيت
+   ' ws.Cells.Locked = False
+    ' پيدا کردن آخرين سطر پر در ستون A
+    lastRow19 = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+
+    ' تعيين محدوده A تا N در آخرين سطر
+    Set targetRange = ws.Range("A" & lastRow19 & ":N" & lastRow19)
+
+
+    ' قفل کردن محدوده سطر فعلي
+    targetRange.Locked = True
+
+    ' محافظت از شيت (بدون UserInterfaceOnly)
+    ws.Protect Password:="YourPassword" ' اگر نمي‌خواهيد پسورد بدهيد، اين خط را حذف کنيد
+
+
+
+
+                 Dim i As Long
+                Dim rowIndex As Integer
+                Dim colIndex As Integer
+                Dim labels(1 To 3, 1 To 4) As String ' ماتريس نام ليبل‌ها
+                Dim lbl As Object
+
+                ' تعيين نام ليبل‌ها به ترتيب رديف و ستون
+                labels(1, 1) = "LabelRow1Col1": labels(1, 2) = "LabelRow1Col2": labels(1, 3) = "LabelRow1Col3": labels(1, 4) = "LabelRow1Col4"
+                labels(2, 1) = "LabelRow2Col1": labels(2, 2) = "LabelRow2Col2": labels(2, 3) = "LabelRow2Col3": labels(2, 4) = "LabelRow2Col4"
+                labels(3, 1) = "LabelRow3Col1": labels(3, 2) = "LabelRow3Col2": labels(3, 3) = "LabelRow3Col3": labels(3, 4) = "LabelRow3Col4"
+
+                ' انتخاب شيت فعال
+                Set ws = ThisWorkbook.Sheets(1)
+
+                ' پيدا کردن آخرين سطر پر
+                lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+                TextBox9.text = 0
+                ComboBox1.text = "نام بافنده"
+                ComboBox2.text = "خرابي"
+                ' پاک کردن متن تمام ليبل‌ها
+                For rowIndex = 1 To 3
+                    For colIndex = 1 To 4
+                        On Error Resume Next ' جلوگيري از خطا در صورت گم‌شدن کنترل
+                        Set lbl = Me.controls(labels(rowIndex, colIndex))
+                        If Not lbl Is Nothing Then lbl.Caption = ""
+                        On Error GoTo 0 ' بازگشت به حالت عادي مديريت خطا
+                    Next colIndex
+                Next rowIndex
+
+                ' به‌روزرساني سه سطر آخر در ليبل‌ها
+                rowIndex = 1
+                For i = lastRow To Application.Max(lastRow - 2, 1) Step -1
+                    For colIndex = 1 To 4
+                        On Error Resume Next
+                        Set lbl = Me.controls(labels(rowIndex, colIndex))
+                        If Not lbl Is Nothing Then
+                            Select Case colIndex
+                                Case 1: lbl.Caption = ws.Cells(i, 1).Value ' کد
+                                Case 2: lbl.Caption = ws.Cells(i, 2).Value ' متراژ
+                                Case 3: lbl.Caption = ws.Cells(i, 3).Value ' ماشين
+                                Case 4: lbl.Caption = ws.Cells(i, 4).Value ' وزن
+                            End Select
+                        End If
+                        On Error GoTo 0
+                    Next colIndex
+                    rowIndex = rowIndex + 1
+                Next i
+                ' افزايش مقدار کد و پاک کردن فيلدها
+                TextBox1.Value = currentCode + 1 ' افزايش کد
+
+                ' انتقال فوکوس به تکس‌باکس متراژ
+                TextBox2.SetFocus
+
+                ' پيام موفقيت
+                MsgBox "اطلاعات با موفقيت ذخيره شد.", vbInformation
+
+                '111111111111111111111111111111111111111111111111111111111111111
+
+'''On Error GoTo ErrorHandler
+'''
+'''    ' غيرفعال کردن ويژگي‌هاي اکسل براي اجراي سريع‌تر
+'''    Application.ScreenUpdating = False
+'''    Application.Calculation = xlCalculationManual
+'''    Application.EnableEvents = False
+'''
+'''    ' تعريف متغيرها
+'''    Dim wsSource As Worksheet, wsDest As Worksheet
+'''    Dim tblDest As ListObject
+'''    Dim lastSourceRow As Long, lastTableRow As Long
+'''    Dim sourceRange As Range, destRange As Range
+'''    Dim newDataCount As Long
+'''    Dim dict As Object ' براي پيگيري داده‌هاي موجود
+'''    Dim key As String
+'''    Dim ii As Long, jj As Long
+'''
+'''    ' تنظيم شيت مبدا و مقصد
+'''    Set wsSource = ThisWorkbook.Sheets("Sheet1")
+'''    Set wsDest = ThisWorkbook.Sheets("Table")
+'''    Set tblDest = wsDest.ListObjects("Table6")
+'''
+'''    ' ايجاد Dictionary براي پيگيري داده‌هاي موجود
+'''    Set dict = CreateObject("Scripting.Dictionary")
+'''
+'''    ' پيگيري داده‌هاي موجود در Table6 (بر اساس ستون A - کد)
+'''    If Not tblDest.DataBodyRange Is Nothing Then
+'''        lastTableRow = tblDest.DataBodyRange.Rows.Count
+'''        For ii = 1 To lastTableRow
+'''            key = CStr(tblDest.DataBodyRange.Cells(ii, 1).value)
+'''            If Not dict.Exists(key) Then dict.add key, ii
+'''        Next ii
+'''    End If
+'''
+'''    ' پيدا کردن آخرين سطر داده در Sheet1
+'''    lastSourceRow = wsSource.Cells(wsSource.Rows.Count, "A").End(xlUp).Row
+'''
+'''    ' تعيين محدوده داده‌هاي جديد (فقط ستون‌هاي A, B, C, D, K, L, M)
+'''    Set sourceRange = wsSource.Range("A2:M" & lastSourceRow) ' توجه: محدوده تا ستون M است
+'''
+'''    ' شمارش داده‌هاي جديد
+'''    newDataCount = 0
+'''
+'''    ' انتقال فقط داده‌هاي جديد به Table6 (فقط ستون‌هاي مورد نظر)
+'''    For ii = 1 To sourceRange.Rows.Count
+'''        key = CStr(sourceRange.Cells(ii, 1).value) ' ستون A به عنوان کليد
+'''
+'''        ' اگر داده وجود نداشت، اضافه کن
+'''        If Not dict.Exists(key) Then
+'''            Dim newRow As ListRow
+'''            Set newRow = tblDest.ListRows.add
+'''
+'''            ' --- انتقال فقط ستون‌هاي مورد نظر ---
+'''            ' ستون A (1)
+'''            newRow.Range.Cells(1, 1).value = sourceRange.Cells(ii, 1).value ' A
+'''            ' ستون B (2)
+'''            newRow.Range.Cells(1, 2).value = sourceRange.Cells(ii, 2).value ' B
+'''            ' ستون C (3)
+'''            newRow.Range.Cells(1, 3).value = sourceRange.Cells(ii, 3).value ' C
+'''            ' ستون D (4)
+'''            newRow.Range.Cells(1, 4).value = sourceRange.Cells(ii, 4).value ' D
+'''            ' ستون K (11) - توجه: در محدوده A:M، ستون K برابر با 11 است
+'''            newRow.Range.Cells(1, 5).value = sourceRange.Cells(ii, 11).value ' K
+'''            ' ستون L (12)
+'''            newRow.Range.Cells(1, 6).value = sourceRange.Cells(ii, 12).value ' L
+'''            ' ستون M (13)
+'''            newRow.Range.Cells(1, 7).value = sourceRange.Cells(ii, 13).value ' M
+'''
+'''            newDataCount = newDataCount + 1
+'''        End If
+'''    Next ii
+'''
+'''    ' فعال کردن مجدد ويژگي‌هاي اکسل
+'''    Application.ScreenUpdating = True
+'''    Application.Calculation = xlCalculationAutomatic
+'''    Application.EnableEvents = True
+'5555555555555555555555555555555555555555555555555555555555555555555555555
+
+
+'555555555555555555555555555555555555555555555555555555555555555555555555
+
+    ' پيام موفقيت
+'    If newDataCount > 0 Then
+'        MsgBox "تعداد " & newDataCount & " سطر جديد به Table6 اضافه شد.", vbInformation
+'    Else
+'        MsgBox "داده جديدي براي اضافه کردن وجود ندارد.", vbInformation
+'    End If
+
+    Exit Sub
+
+ErrorHandler:
+    ' فعال کردن مجدد ويژگي‌هاي اکسل در صورت خطا
+    Application.ScreenUpdating = True
+    Application.Calculation = xlCalculationAutomatic
+    Application.EnableEvents = True
+
+    MsgBox "خطا در به‌روزرساني داده‌ها:" & vbCrLf & Err.Description, vbCritical
+
+End Sub
+
+Private Sub Label33_Click()
+
+End Sub
+
+Private Sub Label38_Click()
+
+End Sub
+
+Private Sub Label49_Click()
+
+End Sub
+
+Private Sub Label50_Click()
+
+End Sub
+
+Private Sub Label52_Click()
+
+End Sub
+
+Private Sub Label55_Click()
+
+End Sub
+
+Private Sub Label6_Click()
+
+End Sub
+
+Private Sub LabelDateTime_Click()
+
+
+End Sub
+
+Private Sub MultiPage1_Change()
+TextBox31.text = Slash(Shamsi())
+TextBox33.text = Slash(Shamsi())
+TextBox43.text = Slash(Shamsi())
+TextBox40.text = Slash(Shamsi())
+TextBox19.text = Slash(Shamsi())
+TextBox47.text = Slash(Shamsi())
+Me.Frame44.Visible = False
+Sheet11.Range("Z1").Value = Format(Date, "yyyy/mm/dd")
+
+ComboBox71.List = Sheet1.Range("AB2:AB12").Value
+ComboBox72.List = Sheet1.Range("AB2:AB12").Value
+ComboBox10.List = Sheet1.Range("AB2:AB12").Value
+ComboBox74.List = Sheet1.Range("AB2:AB12").Value
+Com_mosh.List = Sheet1.Range("AB2:AB12").Value
+
+
+ComboBox70.List = Sheet1.Range("AE2:AE15").Value
+ComboBox73.List = Sheet1.Range("AE2:AE15").Value
+ComboBox11.List = Sheet1.Range("AE2:AE15").Value
+
+ComboBox9.List = Sheet1.Range("AD2:AD5").Value
+ComboBox3.List = Sheet1.Range("AD2:AD5").Value
+
+ComboBox14.List = Sheet1.Range("AA2:AA31").Value
+ComboBox45.List = Sheet1.Range("AA2:AA31").Value
+ComboBox5.List = Sheet1.Range("AF2:AF5").Value
+
+ComboBox4.List = Sheet1.Range("AC2:AC5").Value
+ Set searchResults = New Collection
+
+ '---------------------------------------------------
+' Load_Machine_Values_From_Sheet14
+'--------------------------------------------------------
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim lastCode As Long
+    '33333333333333333333333333333333333333333333333333333333333333
+    ' Dim ws As Worksheet
+   ' Dim lastRow As Long
+    Dim i As Long
+    Dim rowIndex As Integer
+    Dim colIndex As Integer
+    Dim labels(1 To 3, 1 To 4) As String ' ماتريس نام ليبل‌ها
+    Dim lbl As Object
+
+     Dim tbl As ListObject
+    Dim cell As Range
+    Dim uniqueValues As Collection
+    Dim Value As Variant
+    Dim hasData As Boolean
+    Dim dataRange As Range
+    Dim statusCol As Range
+'===========================================================
+
+
+''----------------------------------------------------------------
+
+
+
+    ' نام شيت خود را وارد منيد
+    Set ws = Sheet1
+
+    ' پيدا کردن اخرين رديف حاوي داده در ستون
+    lastRow = ws.Cells(ws.Rows.Count, "p").End(xlUp).Row
+
+    ' تنظيم محدوده حاوي نوع خرابي
+    Set customerList = ws.Range("p2:p" & lastRow) ' ??? ??????? ?? ??? ??????? ?? ???? 2 ???? ???????
+
+    ' ?? ???? ComboBox پر کردن نام بافنده در
+    For Each cell In customerList
+        Me.ComboBox1.AddItem cell.Value
+    Next cell
+    ' تنظيم متن پيش‌فرض
+    Me.ComboBox1.text = "نام بافنده"
+
+For Each cell In customerList
+        Me.ComboBox64.AddItem cell.Value
+    Next cell
+    ' تنظيم متن پيش‌فرض
+    Me.ComboBox64.text = "نام بافنده"
+'---------------------------------------
+'---------------------------------------------------------------
+   TextBox27.text = ws.Range("AN2").Value
+   TextBox28.text = ws.Range("AO2").Value
+
+   TextBox56.text = ws.Range("AN3").Value
+   TextBox57.text = ws.Range("AO3").Value
+
+   TextBox58.text = ws.Range("AN4").Value
+   TextBox59.text = ws.Range("AO4").Value
+
+   TextBox60.text = ws.Range("AN5").Value
+   TextBox61.text = ws.Range("AO5").Value
+
+   TextBox62.text = ws.Range("AN6").Value
+   TextBox63.text = ws.Range("AO6").Value
+
+   TextBox64.text = ws.Range("AN7").Value
+   TextBox65.text = ws.Range("AO7").Value
+
+   TextBox66.text = ws.Range("AN8").Value
+   TextBox67.text = ws.Range("AO8").Value
+
+   TextBox68.text = ws.Range("AN9").Value
+   TextBox69.text = ws.Range("AO9").Value
+
+   TextBox70.text = ws.Range("AN10").Value
+   TextBox71.text = ws.Range("AO10").Value
+
+   TextBox72.text = ws.Range("AN11").Value
+   TextBox73.text = ws.Range("AO11").Value
+
+   TextBox74.text = ws.Range("AN12").Value
+   TextBox75.text = ws.Range("AO12").Value
+
+   TextBox76.text = ws.Range("AN13").Value
+   TextBox77.text = ws.Range("AO13").Value
+
+   TextBox78.text = ws.Range("AN14").Value
+   TextBox79.text = ws.Range("AO14").Value
+
+   TextBox80.text = ws.Range("AN15").Value
+   TextBox81.text = ws.Range("AO15").Value
+
+   TextBox82.text = ws.Range("AN16").Value
+   TextBox83.text = ws.Range("AO16").Value
+'
+'   TextBox27.text = ws.Range("AN2").Value
+'   TextBox28.text = ws.Range("AO2").Value
+'----------------------------------------------------------------
+
+
+
+    ' نام شيت خود را وارد منيد
+    Set ws = Sheet1
+
+    ' پيدا کردن اخرين رديف حاوي داده در ستون
+    lastRow = ws.Cells(ws.Rows.Count, "q").End(xlUp).Row
+
+    ' تنظيم محدوده حاوي نام بافندها
+    Set customerList = ws.Range("q2:q" & lastRow) ' ??? ??????? ?? ??? ??????? ?? ???? 2 ???? ???????
+
+    ' ?? ???? ComboBox پر کردن نام بافنده در
+    For Each cell In customerList
+        Me.ComboBox2.AddItem cell.Value
+    Next cell
+    ' تنظيم متن پيش‌فرض
+    Me.ComboBox2.text = "خرابي "
+
+  For Each cell In customerList
+        Me.ComboBox63.AddItem cell.Value
+    Next cell
+    ' تنظيم متن پيش‌فرض
+    Me.ComboBox63.text = "خرابي "
+'--------------------------------------------------------------=
+
+    ' نام شيت خود را وارد منيد
+    Set ws1 = Sheet1
+
+    ' پيدا کردن اخرين رديف حاوي داده در ستون
+    lRow = ws1.Cells(ws1.Rows.Count, "AG").End(xlUp).Row
+
+    ' تنظيم محدوده حاوي نام بافندها
+    Set customerList1 = ws.Range("AG2:AG" & lRow) ' ??? ??????? ?? ??? ??????? ?? ???? 2 ???? ???????
+
+'     ?? ???? ComboBox پر کردن نام بافنده در
+    For Each cell In customerList1
+        Me.ComboBox67.AddItem cell.Value
+    Next cell
+'     تنظيم متن پيش‌فرض
+'    Me.ComboBox67.text = "خرابي "
+
+'---------------------------------------------------------------
+    ' انتخاب شيت فعال
+   Set ws1 = Sheet1
+
+    ' پيدا کردن آخرين سطر پر
+    lastRow = ws1.Cells(ws1.Rows.Count, 1).End(xlUp).Row
+
+    ' پاک کردن متن تمام ليبل‌ها
+    For rowIndex = 1 To 3
+        For colIndex = 1 To 4
+            On Error Resume Next ' جلوگيري از خطا در صورت گم‌شدن کنترل
+            Set lbl = Me.controls(labels(rowIndex, colIndex))
+            If Not lbl Is Nothing Then lbl.Caption = ""
+            On Error GoTo 0 ' بازگشت به حالت عادي مديريت خطا
+        Next colIndex
+    Next rowIndex
+
+    ' به‌روزرساني سه سطر آخر در ليبل‌ها
+    rowIndex = 1
+    For i = lastRow To Application.Max(lastRow - 2, 1) Step -1
+        For colIndex = 1 To 4
+            On Error Resume Next
+            Set lbl = Me.controls(labels(rowIndex, colIndex))
+            If Not lbl Is Nothing Then
+                Select Case colIndex
+                    Case 1: lbl.Caption = ws.Cells(i, 1).Value ' کد
+                    Case 2: lbl.Caption = ws.Cells(i, 2).Value ' متراژ
+                    Case 3: lbl.Caption = ws.Cells(i, 3).Value ' ماشين
+                    Case 4: lbl.Caption = ws.Cells(i, 4).Value ' وزن
+                End Select
+            End If
+            On Error GoTo 0
+        Next colIndex
+        rowIndex = rowIndex + 1
+    Next i
+    '33333333333333333333333333333333333333333333333333333333333333
+
+
+    Me.MultiPage1.Value = 0
+    With Me
+    .StartUpPosition = 0
+    .Left = 0
+    .Top = 0
+    .Width = Application.Width
+    .Height = Application.Height
+    End With
+   Call UpdateLastThreeRowsInLabels
+   Label6.Caption = UserForm2.ComboBox1.text
+    ' انتخاب شيت فعال
+    Set ws = Sheet1
+    'LabelDateTime.Caption = Format(Date, "yyyy-mm-dd")
+    Label7.Caption = Format(Time, "hh:mm")
+ '   LabelDateTime.Caption = Slash(Shamsi())
+   ' LabelDateTime.Caption = Range("k3").value
+    ' پيدا کردن آخرين سطر پر در ستون A (کد)
+    lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+
+    ' اگر سطر اول خالي باشد (يعني هيچ داده‌اي وجود نداشته باشد)
+    If lastRow < 2 Then
+        lastCode = 0 ' مقدار اوليه براي کد
+    Else
+        ' دريافت آخرين مقدار کد از ستون A
+        lastCode = Val(ws.Cells(lastRow, 1).Value)
+    End If
+
+    ' تنظيم مقدار تکس‌باکس کد با عدد جديد
+    TextBox1.Value = lastCode + 1
+
+
+
+    ' تمرکز روي تکس‌باکس مربوط به متراژ
+    'TextBox2.SetFocus
+    '===================مرتب کردن چک کمبو باکس همبافت پود======================
+
+    Dim ws7 As Worksheet
+    Dim lastRow7 As Long
+    Dim i7 As Long
+    Dim cellValue As String
+    Dim dict As Object
+
+    ' به شيت1 اشاره کن
+    Set ws7 = Sheet7
+'===================================
+Set ws22 = Sheet22
+
+    ' ديکشنري براي حذف تکراري‌ها
+    Set dict = CreateObject("Scripting.Dictionary")
+
+    ' پيدا کردن آخرين رديف پر در ستون G
+    lastRow22 = ws22.Cells(ws22.Rows.Count, "A").End(xlUp).Row
+
+    ' پاک کردن آيتم‌هاي قبلي
+    ComboBox57.Clear
+
+    ' مرور روي داده‌ها
+    For i7 = 2 To lastRow22
+        cellValue = Trim(ws22.Cells(i7, "A").Value)
+
+        If cellValue <> "" And _
+        ws22.Cells(i7, "G").Value > 0 Then
+
+            If Not dict.Exists(cellValue) Then
+                dict.add cellValue, 1
+                ComboBox57.AddItem cellValue
+
+            End If
+        End If
+    Next i7
+    i7 = 0
+'====================================
+    ' ديکشنري براي حذف تکراري‌ها
+    Set dict = CreateObject("Scripting.Dictionary")
+
+    ' پيدا کردن آخرين رديف پر در ستون G
+    lastRow7 = ws7.Cells(ws7.Rows.Count, "G").End(xlUp).Row
+
+    ' پاک کردن آيتم‌هاي قبلي
+
+    ComboBox62.Clear
+    ComboBox60.Clear
+    hambaftpod.ComboBox1.Clear
+    ' مرور روي داده‌ها
+    For i7 = 1 To lastRow7
+        cellValue = Trim(ws7.Cells(i7, "G").Value)
+        If cellValue <> "" Then
+            If Not dict.Exists(cellValue) Then
+                dict.add cellValue, 1
+
+                ComboBox62.AddItem cellValue
+                ComboBox60.AddItem cellValue
+                hambaftpod.ComboBox1.AddItem cellValue
+            End If
+        End If
+    Next i7
+  '  i = 0
+'     For i7 = 1 To lastRow7
+'        cellValue = Trim(ws7.Cells(i7, "G").value)
+'        If cellValue <> "" Then
+'            If Not dict.exists(cellValue) Then
+'                dict.add cellValue, 1
+'                ComboBox62.AddItem cellValue
+'            End If
+'        End If
+'    Next i7
+
+
+
+    '=======================================
+
+   ComboBox56.List = Sheet1.Range("AH2:AH13").Value
+ComboBox68.List = Sheet1.Range("AB2:AB10").Value
+
+ComboBox58.List = Sheet12.Range("G3:G130").Value
+ComboBox65.List = Sheet1.Range("Am2:Am6").Value
+ComboBox66.List = Sheet1.Range("Am2:Am6").Value
+
+ComboBox59.List = Sheet1.Range("AH2:AH13").Value
+'ComboBox60.List = Sheet7.Range("g3:g200").value
+'ComboBox62.List = Sheet7.Range("g3:g200").value
+ComboBox61.List = Sheet12.Range("G3:G130").Value
+'.Text = Slash(Shamsi())
+'End Sub
+
+
+'----------------------------------------------------------
+
+
+
+   ' Dim ws As Worksheet
+
+
+    ' تنظيم شيت و جدول
+    On Error Resume Next
+    Set ws = Sheet12
+    If ws Is Nothing Then
+        MsgBox "شيت Sheet12 يافت نشد!", vbExclamation
+        Exit Sub
+    End If
+
+    Set tbl = ws.ListObjects("Table4")
+    If tbl Is Nothing Then
+        MsgBox "جدول Table4 يافت نشد!", vbExclamation
+        Exit Sub
+    End If
+    On Error GoTo 0
+
+    ' يافتن ستون شماره بيجک
+    Set dataRange = GetTableColumn(tbl, "شماره بيجک")
+    If dataRange Is Nothing Then
+        MsgBox "ستون 'شماره بيجک' در جدول يافت نشد!", vbExclamation
+        Exit Sub
+    End If
+
+    ' يافتن ستون وضعيت (ستون K)
+    Set statusCol = GetTableColumn(tbl, "وضعيت") ' يا نام واقعي ستون K
+    If statusCol Is Nothing Then
+        ' اگر نام ستون وضعيت را نمي دانيم، با افست کار مي کنيم
+        Set statusCol = dataRange.Offset(0, 4) ' افست 4 از ستون G
+    End If
+
+    Set uniqueValues = New Collection
+    hasData = False
+
+    ' پر کردن مقادير منحصر به فرد
+    For Each cell In dataRange
+        If Not IsEmpty(cell.Value) Then
+            ' پيدا کردن سلول متناظر در ستون وضعيت
+            Dim statusCell As Range
+            Set statusCell = statusCol.Cells(cell.Row - dataRange.Row + 1)
+
+            If statusCell.Value = "" Then
+                On Error Resume Next
+                uniqueValues.add cell.Value, CStr(cell.Value)
+                On Error GoTo 0
+                hasData = True
+            End If
+        End If
+    Next cell
+
+    ' پر کردن ComboBox19
+    ComboBox19.Clear
+    If hasData Then
+        For Each Value In uniqueValues
+            ComboBox19.AddItem Value
+        Next Value
+    Else
+        ComboBox19.AddItem "--- داده‌اي يافت نشد ---"
+    End If
+End Sub
+Private Function GetMachineLabel(machineNo As Integer) As MSForms.Label
+
+    Dim ctrl As Control
+    Dim subCtrl As Control
+    Dim lblName As String
+
+    lblName = "M" & machineNo
+
+    ' ===== 1. جستجوي مستقيم روي فرم =====
+    On Error Resume Next
+    Set GetMachineLabel = Me.controls(lblName)
+    On Error GoTo 0
+
+    If Not GetMachineLabel Is Nothing Then Exit Function
+
+    ' ===== 2. جستجو داخل Frame ها =====
+    For Each ctrl In Me.controls
+        If TypeName(ctrl) = "Frame" Then
+            On Error Resume Next
+            Set GetMachineLabel = ctrl.controls(lblName)
+            On Error GoTo 0
+            If Not GetMachineLabel Is Nothing Then Exit Function
+        End If
+    Next ctrl
+
+    ' ===== 3. جستجو داخل MultiPage =====
+    For Each ctrl In Me.controls
+        If TypeName(ctrl) = "MultiPage" Then
+            For Each subCtrl In ctrl.Pages
+                On Error Resume Next
+                Set GetMachineLabel = subCtrl.controls(lblName)
+                On Error GoTo 0
+                If Not GetMachineLabel Is Nothing Then Exit Function
+            Next subCtrl
+        End If
+    Next ctrl
+
+    ' ===== اگر پيدا نشد =====
+    Set GetMachineLabel = Nothing
+
+End Function
+
+
+' تابع براي يافتن ستون بر اساس نام
+Private Function GetTableColumn(tbl As ListObject, columnName As String) As Range
+    Dim i As Long
+    For i = 1 To tbl.ListColumns.Count
+        If LCase(tbl.ListColumns(i).name) = LCase(columnName) Then
+            Set GetTableColumn = tbl.ListColumns(i).DataBodyRange
+            Exit Function
+        End If
+    Next i
+    Set GetTableColumn = Nothing
+End Function
+
+
+
+
+Private Sub MultiPage1_Click(ByVal Index As Long)
+ComboBox69.List = Sheet1.Range("AB2:AB11").Value
+End Sub
+
+Private Sub MultiPage1_MouseMove(ByVal Index As Long, ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
+
+ Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim lastCode As Long
+    '33333333333333333333333333333333333333333333333333333333333333
+    ' Dim ws As Worksheet
+   ' Dim lastRow As Long
+    Dim i As Long
+    Dim rowIndex As Integer
+    Dim colIndex As Integer
+    Dim labels(1 To 3, 1 To 4) As String ' ماتريس نام ليبل‌ها
+    Dim lbl As Object
+    LabelDateTime.Caption = Slash(Shamsi())
+    TB22.text = Slash(Shamsi())
+
+    ' تعيين نام ليبل‌ها به ترتيب رديف و ستون
+    labels(1, 1) = "LabelRow1Col1": labels(1, 2) = "LabelRow1Col2": labels(1, 3) = "LabelRow1Col3": labels(1, 4) = "LabelRow1Col4"
+    labels(2, 1) = "LabelRow2Col1": labels(2, 2) = "LabelRow2Col2": labels(2, 3) = "LabelRow2Col3": labels(2, 4) = "LabelRow2Col4"
+    labels(3, 1) = "LabelRow3Col1": labels(3, 2) = "LabelRow3Col2": labels(3, 3) = "LabelRow3Col3": labels(3, 4) = "LabelRow3Col4"
+
+    ' انتخاب شيت فعال
+    Set ws = ThisWorkbook.Sheets(1)
+
+    ' پيدا کردن آخرين سطر پر
+    lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+
+    ' پاک کردن متن تمام ليبل‌ها
+    For rowIndex = 1 To 3
+        For colIndex = 1 To 4
+            On Error Resume Next ' جلوگيري از خطا در صورت گم‌شدن کنترل
+            Set lbl = Me.controls(labels(rowIndex, colIndex))
+            If Not lbl Is Nothing Then lbl.Caption = ""
+            On Error GoTo 0 ' بازگشت به حالت عادي مديريت خطا
+        Next colIndex
+    Next rowIndex
+
+    ' به‌روزرساني سه سطر آخر در ليبل‌ها
+'    rowIndex = 1
+'    For i = lastRow To Application.Max(lastRow - 2, 1) Step -1
+'        For colIndex = 1 To 4
+'            On Error Resume Next
+'            Set lbl = Me.controls(labels(rowIndex, colIndex))
+'            If Not lbl Is Nothing Then
+'                Select Case colIndex
+'                    Case 1: lbl.Caption = ws.Cells(i, 1).Value ' کد
+'                    Case 2: lbl.Caption = ws.Cells(i, 2).Value ' متراژ
+'                    Case 3: lbl.Caption = ws.Cells(i, 3).Value ' ماشين
+'                    Case 4: lbl.Caption = ws.Cells(i, 4).Value ' وزن
+'                End Select
+'            End If
+'            On Error GoTo 0
+'        Next colIndex
+'        rowIndex = rowIndex + 1
+'    Next i
+
+End Sub
+
+Private Sub TextBox10_Change()
+
+End Sub
+
+Private Sub TextBox11_Change()
+
+End Sub
+
+
+Private Sub TextBox2_Change()
+
+End Sub
+
+Private Sub TextBox3_AfterUpdate()
+'44444444444444444444444444444444444444444444
+
+    Dim i As Integer
+     Dim w As Integer
+    Dim f As Range
+
+ w = 0
+
+
+
+'444444444444444444444444444444444444444444444
+'           If w = 0 Then
+                   lastRow = Sheet1.Cells(Sheet1.Rows.Count, "c").End(xlUp).Row
+
+                  '=============================
+                  lastRow11 = Sheet11.Cells(Sheet1.Rows.Count, "c").End(xlUp).Row
+                  For i = lastRow11 To 1 Step -1
+
+                     If TextBox3.text = Sheet11.Range("c" & i).Value Then
+
+                       ComboBox62.text = Sheet11.Range("d" & i).Value
+
+
+                        Exit For
+
+                     End If
+                   Next i
+                  '==========================
+                  i = 0
+                  For i = lastRow To 1 Step -1
+
+                     If TextBox3.text = Sheet1.Range("c" & i).Value Then
+
+
+                        TextBox12.text = Sheet1.Range("m" & i).Value
+                       ComboBox62.text = Sheet1.Range("l" & i).Value
+
+
+                        TextBox10.text = Sheet1.Range("k" & i).Value
+                        Exit For
+
+                     End If
+                   Next i
+
+'           End If
+
+            '777777777777777777777777777777777777777777777
+
+            '777777777777777777همبافت پود  777777777777777777
+
+
+
+         lastRow = Sheet8.Cells(Sheet8.Rows.Count, "b").End(xlUp).Row
+          For i = lastRow To 1 Step -1
+             If TextBox3.text = Sheet8.Range("b" & i).Value Then
+                    If Sheet8.Range("e" & i).Value = "" Then
+
+                        porsesh.Show
+
+
+
+                        Exit For
+                        End
+                   End If
+           End If
+           Next i
+
+End Sub
+
+
+
+
+
+
+Private Sub TextBox49_Change()
+
+End Sub
+
+
+
+Private Sub TextBox5_AfterUpdate()
+Dim ws As Worksheet
+    Dim findValue As String
+    Dim findRange As Range
+    Dim rowNumber As Long
+       Dim i As Long
+    Dim rowIndex As Integer
+    Dim colIndex As Integer
+    Dim labels(1 To 3, 1 To 4) As String ' ماتريس نام ليبل‌ها
+    Dim lbl As Object
+
+
+    Set ws = ThisWorkbook.Sheets("Sheet1")
+    findValue = TextBox5.Value
+
+    ' پيدا کردن سطري که مقدار در TextBox5 را دارد
+    Set findRange = ws.Range("A:A").Find(What:=findValue, LookIn:=xlValues, LookAt:=xlWhole)
+
+    If Not findRange Is Nothing Then
+        rowNumber = findRange.Row
+        'MsgBox "مقدار يافت شد در رديف: " & rowNumber
+
+        ' قرار دادن مقادير TextBox6، TextBox7 و TextBox8 برابر با مقادير سطر مربوطه
+        TextBox6.Value = ws.Cells(rowNumber, 2).Value  ' ستون B
+        TextBox7.Value = ws.Cells(rowNumber, 3).Value  ' ستون C
+        TextBox8.Value = ws.Cells(rowNumber, 4).Value        ' ستون D
+        TextBox16.Value = ws.Cells(rowNumber, 11).Value
+        TextBox17.Value = ws.Cells(rowNumber, 12).Value
+        TextBox18.Value = ws.Cells(rowNumber, 13).Value
+
+    Else
+        MsgBox "مقدار يافت نشد", vbExclamation
+    End If
+
+    ' تعيين نام ليبل‌ها به ترتيب رديف و ستون
+    labels(1, 1) = "LabelRow1Col1": labels(1, 2) = "LabelRow1Col2": labels(1, 3) = "LabelRow1Col3": labels(1, 4) = "LabelRow1Col4"
+    labels(2, 1) = "LabelRow2Col1": labels(2, 2) = "LabelRow2Col2": labels(2, 3) = "LabelRow2Col3": labels(2, 4) = "LabelRow2Col4"
+    labels(3, 1) = "LabelRow3Col1": labels(3, 2) = "LabelRow3Col2": labels(3, 3) = "LabelRow3Col3": labels(3, 4) = "LabelRow3Col4"
+
+End Sub
+
+'Private Sub UserForm_Initialize()
+
+Private Sub UpdateLastThreeRowsInLabels()
+    Dim ws As Worksheet
+    Dim lastRow As Long
+    Dim i As Long
+    Dim rowIndex As Integer
+    Dim colIndex As Integer
+    Dim labels(1 To 3, 1 To 4) As String ' ماتريس نام ليبل‌ها
+    Dim lbl As Object
+
+    ' تعيين نام ليبل‌ها به ترتيب رديف و ستون
+    labels(1, 1) = "LabelRow1Col1": labels(1, 2) = "LabelRow1Col2": labels(1, 3) = "LabelRow1Col3": labels(1, 4) = "LabelRow1Col4"
+    labels(2, 1) = "LabelRow2Col1": labels(2, 2) = "LabelRow2Col2": labels(2, 3) = "LabelRow2Col3": labels(2, 4) = "LabelRow2Col4"
+    labels(3, 1) = "LabelRow3Col1": labels(3, 2) = "LabelRow3Col2": labels(3, 3) = "LabelRow3Col3": labels(3, 4) = "LabelRow3Col4"
+
+    ' انتخاب شيت فعال
+    Set ws = ThisWorkbook.Sheets(1)
+
+    ' پيدا کردن آخرين سطر پر
+    lastRow = ws.Cells(ws.Rows.Count, 1).End(xlUp).Row
+
+    ' پاک کردن متن تمام ليبل‌ها
+    For rowIndex = 1 To 3
+        For colIndex = 1 To 4
+            On Error Resume Next ' جلوگيري از خطا در صورت گم‌شدن کنترل
+            Set lbl = Me.controls(labels(rowIndex, colIndex))
+            If Not lbl Is Nothing Then lbl.Caption = ""
+            On Error GoTo 0 ' بازگشت به حالت عادي مديريت خطا
+        Next colIndex
+    Next rowIndex
+
+    ' به‌روزرساني سه سطر آخر در ليبل‌ها
+    rowIndex = 1
+    For i = lastRow To Application.Max(lastRow - 2, 1) Step -1
+        For colIndex = 1 To 4
+            On Error Resume Next
+            Set lbl = Me.controls(labels(rowIndex, colIndex))
+            If Not lbl Is Nothing Then
+                Select Case colIndex
+                    Case 1: lbl.Caption = ws.Cells(i, 1).Value ' کد
+                    Case 2: lbl.Caption = ws.Cells(i, 2).Value ' متراژ
+                    Case 3: lbl.Caption = ws.Cells(i, 3).Value ' ماشين
+                    Case 4: lbl.Caption = ws.Cells(i, 4).Value ' وزن
+                End Select
+            End If
+            On Error GoTo 0
+        Next colIndex
+        rowIndex = rowIndex + 1
+    Next i
+End Sub
+
+
+
+
+Private Sub UserForm_MouseMove(ByVal Button As Integer, ByVal Shift As Integer, ByVal X As Single, ByVal Y As Single)
+
+End Sub
+==========================================================================================================
+========================marhale.txt=======================================================================
+قفل کردن سلولها صرفا برای جلوگیری از جلوگیری دستکاری اطلاعات بود و نیازی به انجام ان در پروژه جدید نیست
+پروژه باید فارسی باشد
+مهاجرت تدریجی منطقی تر میباشد 
+ از  ایجاد دیتابیس و ثبت اطلاعات شروع کن
+پیشنهاد  برای ایجاد پوشها و عایلهای مورد نظر و دیتابیس یک فایل مجزا مثلا با پایتون ایجاد کن تا پیشنیازهای پروژه را ایجاد کند و بعد بریم سراغ vba.net تحت وب
+پیشنیازهای پروژه را ایجاد کند و بعد بریم سراغ vba.net تحت وب
+🚀 پلن مهاجرت تدریجی به VB.NET تحت وب
+📁 ساختار پوشه‌ها و فایل‌های پیش‌نیاز
+ساختار پوشه‌ها:
+text
+MyTextileProject/
+│
+├── 01_Database/              # اسکریپت‌های ایجاد دیتابیس
+│   ├── CreateDatabase.py     # اسکریپت پایتون برای ایجاد دیتابیس
+│   ├── Schema.sql           # طرح دیتابیس
+│   ├── SampleData.sql       # داده‌های نمونه
+│   └── MigrateExcelData.py  # مهاجرت داده‌های اکسل به SQL
+│
+├── 02_Backend/              # پروژه VB.NET Web API
+│   ├── Controllers/         # کنترلرهای API
+│   ├── Models/              # مدل‌های داده
+│   ├── Data/               # لایه دسترسی به داده
+│   └── Services/           # سرویس‌های کسب‌وکار
+│
+├── 03_Frontend/            # رابط کاربری تحت وب
+│   ├── index.html          # صفحه اصلی فارسی
+│   ├── css/               # استایل‌های فارسی
+│   ├── js/                # جاوااسکریپت
+│   └── pages/             # صفحات مختلف
+│
+├── 04_ExcelData/           # داده‌های اکسل اصلی
+│   ├── data.xlsx          # فایل اکسل فعلی
+│   └── backup/            # نسخه‌های پشتیبان
+│
+└── docs/                  # مستندات
+    ├── Requirements.md    # نیازمندی‌ها
+    └── MigrationPlan.md   # نقشه مهاجرت
+🗄️ فاز ۱: ایجاد دیتابیس با پایتون
+فایل ۱: 01_Database/CreateDatabase.py
+# -*- coding: utf-8 -*-
+"""
+اسکریپت ایجاد دیتابیس SQLite برای پروژه نساجی
+"""
+
+import sqlite3
+import pandas as pd
+import os
+from datetime import datetime
+
+class TextileDatabaseCreator:
+    def __init__(self, db_path='TextileDB.db'):
+        self.db_path = db_path
+        self.conn = None
+        
+    def create_database(self):
+        """ایجاد دیتابیس و جداول"""
+        print("📦 در حال ایجاد دیتابیس فارسی...")
+        
+        try:
+            # اتصال به دیتابیس (اگر وجود نداشت، ایجاد می‌شود)
+            self.conn = sqlite3.connect(self.db_path)
+            self.conn.execute("PRAGMA encoding = 'UTF-8';")
+            self.conn.execute("PRAGMA foreign_keys = ON;")
+            
+            # ایجاد جداول
+            self._create_tables()
+            
+            # ایجاد ویوها
+            self._create_views()
+            
+            # درج داده‌های اولیه
+            self._insert_initial_data()
+            
+            print("✅ دیتابیس با موفقیت ایجاد شد!")
+            
+        except Exception as e:
+            print(f"❌ خطا در ایجاد دیتابیس: {e}")
+            raise
+            
+        finally:
+            if self.conn:
+                self.conn.close()
+    
+    def _create_tables(self):
+        """ایجاد جداول اصلی"""
+        tables = [
+            # جدول کاربران
+            """
+            CREATE TABLE IF NOT EXISTS Users (
+                UserID INTEGER PRIMARY KEY AUTOINCREMENT,
+                Username NVARCHAR(100) NOT NULL UNIQUE,
+                Password NVARCHAR(255) NOT NULL,
+                FullName NVARCHAR(200) NOT NULL,
+                Role NVARCHAR(50) NOT NULL DEFAULT 'کاربر',
+                IsActive BOOLEAN DEFAULT 1,
+                CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+            );
+            """,
+            
+            # جدول مشتریان
+            """
+            CREATE TABLE IF NOT EXISTS Customers (
+                CustomerID INTEGER PRIMARY KEY AUTOINCREMENT,
+                CustomerCode NVARCHAR(50) UNIQUE,
+                CustomerName NVARCHAR(200) NOT NULL,
+                ContactPerson NVARCHAR(200),
+                Phone NVARCHAR(20),
+                Address TEXT,
+                IsActive BOOLEAN DEFAULT 1,
+                CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+            );
+            """,
+            
+            # جدول کالاها (محصولات)
+            """
+            CREATE TABLE IF NOT EXISTS Products (
+                ProductID INTEGER PRIMARY KEY AUTOINCREMENT,
+                ProductCode NVARCHAR(50) UNIQUE,
+                ProductName NVARCHAR(200) NOT NULL,
+                ProductType NVARCHAR(100),  -- نوع جنس
+                Unit NVARCHAR(20) DEFAULT 'متر',
+                IsActive BOOLEAN DEFAULT 1,
+                CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+            );
+            """,
+            
+            # جدول پارچه‌ها (اصلی)
+            """
+            CREATE TABLE IF NOT EXISTS Fabrics (
+                FabricID INTEGER PRIMARY KEY AUTOINCREMENT,
+                FabricCode NVARCHAR(50) UNIQUE NOT NULL,
+                ProductID INTEGER,
+                Meterage DECIMAL(10, 2) NOT NULL,  -- متراژ
+                MachineNumber NVARCHAR(50),        -- شماره ماشین
+                Weight DECIMAL(10, 2),            -- وزن
+                WarpWeave NVARCHAR(100),          -- همبافت چله
+                WeftWeave NVARCHAR(100),          -- همبافت پود
+                WarpNumber NVARCHAR(100),         -- شماره چله
+                WeaverName NVARCHAR(200),         -- نام بافنده
+                DefectType NVARCHAR(200),         -- نوع خرابی
+                ProductionDate DATE,              -- تاریخ تولید
+                ProductionTime TIME,              -- زمان تولید
+                CustomerID INTEGER,
+                InvoiceNumber NVARCHAR(100),      -- شماره فاکتور
+                InvoiceDate DATE,                 -- تاریخ فاکتور
+                Status NVARCHAR(50) DEFAULT 'موجود',  -- وضعیت
+                CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (ProductID) REFERENCES Products(ProductID),
+                FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+            );
+            """,
+            
+            # جدول ورود/خروج نخ
+            """
+            CREATE TABLE IF NOT EXISTS YarnTransactions (
+                TransactionID INTEGER PRIMARY KEY AUTOINCREMENT,
+                TransactionDate DATE NOT NULL,
+                YarnType NVARCHAR(100) NOT NULL,      -- نوع نخ
+                YarnWeave NVARCHAR(100),             -- همبافت نخ
+                CustomerID INTEGER,
+                InvoiceNumber NVARCHAR(100),         -- شماره فاکتور
+                Weight DECIMAL(10, 2) NOT NULL,      -- وزن نخ
+                MachineNumber NVARCHAR(50),          -- شماره ماشین
+                WarpNumber NVARCHAR(100),            -- شماره چله
+                TransactionType NVARCHAR(50) NOT NULL, -- 'ورودی' یا 'خروجی'
+                CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+            );
+            """,
+            
+            # جدول موجودی نخ
+            """
+            CREATE TABLE IF NOT EXISTS YarnInventory (
+                InventoryID INTEGER PRIMARY KEY AUTOINCREMENT,
+                YarnType NVARCHAR(100) NOT NULL,
+                YarnWeave NVARCHAR(100) NOT NULL,
+                CustomerID INTEGER,
+                InitialStock DECIMAL(10, 2) DEFAULT 0,
+                Incoming DECIMAL(10, 2) DEFAULT 0,
+                Outgoing DECIMAL(10, 2) DEFAULT 0,
+                CurrentStock DECIMAL(10, 2) GENERATED ALWAYS AS (InitialStock + Incoming - Outgoing),
+                LastUpdated DATETIME DEFAULT CURRENT_TIMESTAMP,
+                UNIQUE(YarnType, YarnWeave, CustomerID),
+                FOREIGN KEY (CustomerID) REFERENCES Customers(CustomerID)
+            );
+            """,
+            
+            # جدول ماشین‌آلات
+            """
+            CREATE TABLE IF NOT EXISTS Machines (
+                MachineID INTEGER PRIMARY KEY AUTOINCREMENT,
+                MachineNumber NVARCHAR(50) UNIQUE NOT NULL,
+                MachineName NVARCHAR(200),
+                Status NVARCHAR(50) DEFAULT 'فعال',
+                LastMaintenance DATE,
+                CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+            );
+            """,
+            
+            # جدول گزارش‌ها
+            """
+            CREATE TABLE IF NOT EXISTS Reports (
+                ReportID INTEGER PRIMARY KEY AUTOINCREMENT,
+                ReportType NVARCHAR(100) NOT NULL,
+                ReportDate DATE NOT NULL,
+                Parameters TEXT,
+                FilePath NVARCHAR(500),
+                CreatedBy INTEGER,
+                CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (CreatedBy) REFERENCES Users(UserID)
+            );
+            """
+        ]
+        
+        cursor = self.conn.cursor()
+        for table_sql in tables:
+            cursor.execute(table_sql)
+        
+        self.conn.commit()
+        print("📊 جداول ایجاد شدند")
+    
+    def _create_views(self):
+        """ایجاد ویوهای گزارش‌گیری"""
+        views = [
+            # ویو گزارش پارچه‌های موجود
+            """
+            CREATE VIEW IF NOT EXISTS vw_AvailableFabrics AS
+            SELECT 
+                f.FabricCode,
+                p.ProductName,
+                f.Meterage,
+                f.MachineNumber,
+                f.Weight,
+                f.WarpWeave,
+                f.WeftWeave,
+                f.WarpNumber,
+                f.ProductionDate,
+                c.CustomerName,
+                f.Status
+            FROM Fabrics f
+            LEFT JOIN Products p ON f.ProductID = p.ProductID
+            LEFT JOIN Customers c ON f.CustomerID = c.CustomerID
+            WHERE f.Status = 'موجود'
+            ORDER BY f.ProductionDate DESC;
+            """,
+            
+            # ویو موجودی نخ
+            """
+            CREATE VIEW IF NOT EXISTS vw_YarnStock AS
+            SELECT 
+                yi.YarnType,
+                yi.YarnWeave,
+                c.CustomerName,
+                yi.InitialStock,
+                yi.Incoming,
+                yi.Outgoing,
+                yi.CurrentStock,
+                CASE 
+                    WHEN yi.CurrentStock < 0 THEN 'منفی'
+                    WHEN yi.CurrentStock < yi.InitialStock * 0.2 THEN 'کمبود شدید'
+                    WHEN yi.CurrentStock < yi.InitialStock * 0.5 THEN 'کمبود'
+                    ELSE 'کافی'
+                END AS StockStatus
+            FROM YarnInventory yi
+            LEFT JOIN Customers c ON yi.CustomerID = c.CustomerID
+            ORDER BY yi.CurrentStock ASC;
+            """
+        ]
+        
+        cursor = self.conn.cursor()
+        for view_sql in views:
+            cursor.execute(view_sql)
+        
+        self.conn.commit()
+        print("👁️ ویوهای گزارش‌گیری ایجاد شدند")
+    
+    def _insert_initial_data(self):
+        """درج داده‌های اولیه"""
+        cursor = self.conn.cursor()
+        
+        # کاربر پیش‌فرض
+        cursor.execute("""
+        INSERT OR IGNORE INTO Users (Username, Password, FullName, Role)
+        VALUES ('admin', '123456', 'مدیر سیستم', 'مدیر')
+        """)
+        
+        # مشتریان نمونه
+        sample_customers = [
+            ('C001', 'مشتری نمونه ۱', 'آقای احمدی', '021-12345678', 'تهران'),
+            ('C002', 'مشتری نمونه ۲', 'آقای رضایی', '021-87654321', 'اصفهان'),
+        ]
+        
+        for customer in sample_customers:
+            cursor.execute("""
+            INSERT OR IGNORE INTO Customers (CustomerCode, CustomerName, ContactPerson, Phone, Address)
+            VALUES (?, ?, ?, ?, ?)
+            """, customer)
+        
+        # محصولات نمونه
+        sample_products = [
+            ('P001', 'پارچه پنبه‌ای', 'پنبه'),
+            ('P002', 'پارچه پلی‌استر', 'پلی‌استر'),
+            ('P003', 'پارچه ویسکوز', 'ویسکوز'),
+        ]
+        
+        for product in sample_products:
+            cursor.execute("""
+            INSERT OR IGNORE INTO Products (ProductCode, ProductName, ProductType)
+            VALUES (?, ?, ?)
+            """, product)
+        
+        # ماشین‌آلات نمونه
+        for i in range(1, 16):
+            cursor.execute("""
+            INSERT OR IGNORE INTO Machines (MachineNumber, MachineName)
+            VALUES (?, ?)
+            """, (f'M{i}', f'ماشین شماره {i}'))
+        
+        self.conn.commit()
+        print("📝 داده‌های اولیه درج شدند")
+
+def migrate_excel_data(excel_path, db_path):
+    """
+    مهاجرت داده‌های اکسل به دیتابیس SQLite
+    """
+    print(f"🔄 در حال مهاجرت داده‌ها از {excel_path}...")
+    
+    try:
+        conn = sqlite3.connect(db_path)
+        
+        # خواندن شیت‌های اکسل
+        # (این بخش بستگی به ساختار فایل اکسل شما دارد)
+        # مثال:
+        # df_fabrics = pd.read_excel(excel_path, sheet_name='Sheet1')
+        # df_fabrics.to_sql('Fabrics', conn, if_exists='append', index=False)
+        
+        print("✅ مهاجرت داده‌ها تکمیل شد")
+        
+    except Exception as e:
+        print(f"❌ خطا در مهاجرت داده‌ها: {e}")
+
+if __name__ == "__main__":
+    # ایجاد پوشه‌ها
+    os.makedirs('01_Database', exist_ok=True)
+    os.makedirs('04_ExcelData/backup', exist_ok=True)
+    os.makedirs('docs', exist_ok=True)
+    
+    # ایجاد دیتابیس
+    creator = TextileDatabaseCreator('TextileDB.db')
+    creator.create_database()
+    
+    print("\n🎉 دیتابیس آماده است!")
+    print("📍 مسیر دیتابیس: TextileDB.db")
+    print("📊 می‌توانید با ابزارهایی مانند DB Browser for SQLite آن را مشاهده کنید")
+۲: 01_Database/Schema.sql
+-- طرح کامل دیتابیس به صورت جداگانه
+-- فایل اصلی برای مستندات
+
+-- :جدول کاربران
+CREATE TABLE Users (
+    UserID INTEGER PRIMARY KEY AUTOINCREMENT,
+    Username NVARCHAR(100) NOT NULL UNIQUE,
+    Password NVARCHAR(255) NOT NULL,
+    FullName NVARCHAR(200) NOT NULL,
+    Role NVARCHAR(50) NOT NULL DEFAULT 'کاربر',
+    IsActive BOOLEAN DEFAULT 1,
+    CreatedAt DATETIME DEFAULT CURRENT_TIMESTAMP
+);
+
+-- شاخص‌ها
+CREATE INDEX idx_users_username ON Users(Username);
+CREATE INDEX idx_users_role ON Users(Role);
+
+-- :اطلاعات نمونه کاربران
+INSERT INTO Users (Username, Password, FullName, Role) VALUES
+('admin', '123456', 'مدیر سیستم', 'مدیر'),
+('operator', '123456', 'اپراتور تولید', 'اپراتور'),
+('accountant', '123456', 'حسابدار', 'حسابدار');
+
+-- ادامه جداول مشابه بالا...
+۳: docs/Requirements.md
+# مستندات نیازمندی‌های سیستم نساجی
+
+## 🎯 اهداف پروژه
+1. اتوماسیون فرآیندهای تولید پارچه
+2. مدیریت موجودی نخ و مواد اولیه
+3. صدور فاکتور و گزارش‌گیری
+4. پشتیبانی از تاریخ شمسی
+
+## 📋 ماژول‌های اصلی
+
+### ۱. مدیریت تولید
+- ثبت اطلاعات پارچه (کد، متراژ، ماشین، وزن)
+- مدیریت همبافت چله و پود
+- ثبت شماره چله
+- مدیریت نام بافنده و نوع خرابی
+
+### ۲. مدیریت موجودی
+- ورود و خروج نخ
+- محاسبه موجودی لحظه‌ای
+- هشدار کمبود مواد
+
+### ۳. مدیریت مشتریان و فاکتور
+- ثبت مشتریان جدید
+- صدور فاکتور فروش
+- چاپ برچسب و فاکتور
+
+### ۴. گزارش‌گیری
+- گزارش تولید روزانه
+- گزارش موجودی
+- گزارش فروش
+- گزارش‌های تحلیلی
+
+## 🔧 نیازمندی‌های فنی
+- پشتیبانی از زبان فارسی (راست به چپ)
+- تاریخ شمسی
+- چاپ به PDF
+- امنیت دسترسی کاربران
+🎨 فاز ۲: ایجاد پروژه VB.NET تحت وب
+ساختار پروژه VB.NET:
+TextileWebApp/
+├── TextileWebApp.sln
+├── TextileWebApp/
+│   ├── App_Data/
+│   │   └── TextileDB.db
+│   ├── Controllers/
+│   │   ├── HomeController.vb
+│   │   ├── FabricController.vb
+│   │   ├── CustomerController.vb
+│   │   └── ReportController.vb
+│   ├── Models/
+│   │   ├── FabricModel.vb
+│   │   ├── CustomerModel.vb
+│   │   ├── YarnModel.vb
+│   │   └── InvoiceModel.vb
+│   ├── Views/
+│   │   ├── Home/
+│   │   ├── Fabric/
+│   │   ├── Customer/
+│   │   └── Shared/
+│   ├── Scripts/
+│   │   ├── persian-date.min.js
+│   │   └── custom.js
+│   ├── Content/
+│   │   ├── Site.css
+│   │   └── persian.css
+│   ├── Global.asax
+│   └── Web.config
+└── packages.config
+۴: 02_Backend/Models/FabricModel.vb
+' مدل پارچه در VB.NET
+Public Class FabricModel
+    Public Property FabricID As Integer
+    Public Property FabricCode As String
+    Public Property ProductID As Integer?
+    Public Property Meterage As Decimal
+    Public Property MachineNumber As String
+    Public Property Weight As Decimal
+    Public Property WarpWeave As String
+    Public Property WeftWeave As String
+    Public Property WarpNumber As String
+    Public Property WeaverName As String
+    Public Property DefectType As String
+    Public Property ProductionDate As Date?
+    Public Property ProductionTime As TimeSpan?
+    Public Property CustomerID As Integer?
+    Public Property InvoiceNumber As String
+    Public Property InvoiceDate As Date?
+    Public Property Status As String
+    Public Property CreatedAt As Date?
+    
+    ' ویژگی‌های مرتبط
+    Public Property ProductName As String
+    Public Property CustomerName As String
+End Class
+
+Public Class FabricCreateModel
+    Public Property FabricCode As String
+    Public Property Meterage As Decimal
+    Public Property MachineNumber As String
+    Public Property Weight As Decimal
+    Public Property WarpWeave As String
+    Public Property WeftWeave As String
+    Public Property WarpNumber As String
+    Public Property WeaverName As String
+    Public Property DefectType As String
+    Public Property CustomerID As Integer?
+    Public Property ProductID As Integer?
+End Class
+۵: 02_Backend/Data/DatabaseHelper.vb
+Imports System.Data.SQLite
+Imports System.Configuration
+
+Public Class DatabaseHelper
+    Private ReadOnly ConnectionString As String
+    
+    Public Sub New()
+        ConnectionString = ConfigurationManager.ConnectionStrings("TextileDB").ConnectionString
+    End Sub
+    
+    Public Function GetConnection() As SQLiteConnection
+        Dim connection As New SQLiteConnection(ConnectionString)
+        connection.Open()
+        Return connection
+    End Function
+    
+    Public Function ExecuteNonQuery(sql As String, Optional parameters As Dictionary(Of String, Object) = Nothing) As Integer
+        Using connection As SQLiteConnection = GetConnection()
+            Using command As New SQLiteCommand(sql, connection)
+                If parameters IsNot Nothing Then
+                    For Each param In parameters
+                        command.Parameters.AddWithValue(param.Key, param.Value)
+                    Next
+                End If
+                
+                Return command.ExecuteNonQuery()
+            End Using
+        End Using
+    End Function
+    
+    Public Function ExecuteScalar(sql As String, Optional parameters As Dictionary(Of String, Object) = Nothing) As Object
+        Using connection As SQLiteConnection = GetConnection()
+            Using command As New SQLiteCommand(sql, connection)
+                If parameters IsNot Nothing Then
+                    For Each param In parameters
+                        command.Parameters.AddWithValue(param.Key, param.Value)
+                    Next
+                End If
+                
+                Return command.ExecuteScalar()
+            End Using
+        End Using
+    End Function
+    
+    Public Function GetDataTable(sql As String, Optional parameters As Dictionary(Of String, Object) = Nothing) As DataTable
+        Using connection As SQLiteConnection = GetConnection()
+            Using command As New SQLiteCommand(sql, connection)
+                If parameters IsNot Nothing Then
+                    For Each param In parameters
+                        command.Parameters.AddWithValue(param.Key, param.Value)
+                    Next
+                End If
+                
+                Using adapter As New SQLiteDataAdapter(command)
+                    Dim dt As New DataTable()
+                    adapter.Fill(dt)
+                    Return dt
+                End Using
+            End Using
+        End Using
+    End Function
+End Class
+🌐 فاز ۳: رابط کاربری تحت وب (HTML/JavaScript)
+فایل ۶: 03_Frontend/index.html
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سیستم مدیریت نساجی</title>
+    
+    <!-- استایل‌های بوت استرپ فارسی -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.rtl.min.css">
+    
+    <!-- فونت وزیر -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/rastikerdar/vazir-font@v30.1.0/dist/font-face.css">
+    
+    <!-- استایل اختصاصی -->
+    <link rel="stylesheet" href="css/persian.css">
+    
+    <!-- آیکون‌ها -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css">
+    
+    <style>
+        body {
+            font-family: Vazir, sans-serif;
+            background-color: #f8f9fa;
+        }
+        
+        .sidebar {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 12px 20px;
+            border-radius: 5px;
+            margin-bottom: 5px;
+            transition: all 0.3s;
+        }
+        
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+        }
+        
+        .sidebar .nav-link i {
+            margin-left: 10px;
+        }
+        
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+        }
+        
+        .card-header {
+            background-color: #667eea;
+            color: white;
+            border-radius: 10px 10px 0 0 !important;
+        }
+        
+        .btn-primary {
+            background-color: #667eea;
+            border-color: #667eea;
+        }
+        
+        .btn-primary:hover {
+            background-color: #5a6fd8;
+            border-color: #5a6fd8;
+        }
+        
+        .stat-card {
+            border-left: 4px solid;
+            padding: 15px;
+        }
+        
+        .stat-card.production {
+            border-color: #28a745;
+        }
+        
+        .stat-card.inventory {
+            border-color: #ffc107;
+        }
+        
+        .stat-card.customers {
+            border-color: #17a2b8;
+        }
+        
+        .stat-card.sales {
+            border-color: #dc3545;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- نوار کناری -->
+            <nav class="col-md-2 d-none d-md-block sidebar">
+                <div class="position-sticky pt-3">
+                    <div class="text-center mb-4">
+                        <h4><i class="bi bi-bricks"></i> سیستم نساجی</h4>
+                        <small>نسخه تحت وب</small>
+                    </div>
+                    
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#">
+                                <i class="bi bi-house-door"></i> داشبورد
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="bi bi-clipboard-data"></i> ثبت تولید
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="bi bi-box-seam"></i> موجودی نخ
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="bi bi-people"></i> مشتریان
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="bi bi-receipt"></i> فاکتورها
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="bi bi-printer"></i> گزارش‌ها
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="bi bi-gear"></i> تنظیمات
+                            </a>
+                        </li>
+                        <hr class="bg-white">
+                        <li class="nav-item">
+                            <a class="nav-link" href="#">
+                                <i class="bi bi-person-circle"></i> پروفایل
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link text-danger" href="#">
+                                <i class="bi bi-box-arrow-left"></i> خروج
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- محتویات اصلی -->
+            <main class="col-md-10 ms-sm-auto col-lg-10 px-md-4">
+                <!-- نوار بالایی -->
+                <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                    <h1 class="h2">داشبورد مدیریت</h1>
+                    <div class="btn-toolbar mb-2 mb-md-0">
+                        <div class="btn-group me-2">
+                            <button type="button" class="btn btn-sm btn-outline-secondary">
+                                <i class="bi bi-calendar"></i> امروز: <span id="persian-date"></span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- آمار کلی -->
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="card stat-card production">
+                            <div class="card-body">
+                                <h5 class="card-title">تولید امروز</h5>
+                                <h2 class="card-text">125 <small>متر</small></h2>
+                                <p class="card-text">
+                                    <small class="text-success">
+                                        <i class="bi bi-arrow-up"></i> 12% نسبت به دیروز
+                                    </small>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="card stat-card inventory">
+                            <div class="card-body">
+                                <h5 class="card-title">موجودی نخ</h5>
+                                <h2 class="card-text">2,450 <small>کیلوگرم</small></h2>
+                                <p class="card-text">
+                                    <small class="text-warning">
+                                        <i class="bi bi-exclamation-triangle"></i> 3 مورد کمبود
+                                    </small>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="card stat-card customers">
+                            <div class="card-body">
+                                <h5 class="card-title">مشتریان فعال</h5>
+                                <h2 class="card-text">24</h2>
+                                <p class="card-text">
+                                    <small class="text-info">
+                                        <i class="bi bi-person-plus"></i> 2 مشتری جدید
+                                    </small>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-md-3">
+                        <div class="card stat-card sales">
+                            <div class="card-body">
+                                <h5 class="card-title">فروش ماه</h5>
+                                <h2 class="card-text">85 <small>میلیون تومان</small></h2>
+                                <p class="card-text">
+                                    <small class="text-danger">
+                                        <i class="bi bi-arrow-down"></i> 5% نسبت به ماه قبل
+                                    </small>
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- فرم ثبت سریع -->
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h5 class="mb-0">ثبت سریع تولید</h5>
+                            </div>
+                            <div class="card-body">
+                                <form id="quick-production-form">
+                                    <div class="row g-3">
+                                        <div class="col-md-3">
+                                            <label for="fabric-code" class="form-label">کد پارچه</label>
+                                            <input type="text" class="form-control" id="fabric-code" required>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="meterage" class="form-label">متراژ</label>
+                                            <input type="number" class="form-control" id="meterage" step="0.01" required>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="machine" class="form-label">شماره ماشین</label>
+                                            <select class="form-select" id="machine" required>
+                                                <option value="">انتخاب کنید</option>
+                                                <option value="M1">ماشین 1</option>
+                                                <option value="M2">ماشین 2</option>
+                                                <option value="M3">ماشین 3</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <label for="weight" class="form-label">وزن (کیلوگرم)</label>
+                                            <input type="number" class="form-control" id="weight" step="0.01" required>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <label for="customer" class="form-label">مشتری</label>
+                                            <select class="form-select" id="customer">
+                                                <option value="">انتخاب کنید</option>
+                                                <option value="1">مشتری نمونه 1</option>
+                                                <option value="2">مشتری نمونه 2</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-12">
+                                            <button type="submit" class="btn btn-primary">
+                                                <i class="bi bi-check-circle"></i> ثبت اطلاعات
+                                            </button>
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- جدول آخرین تولیدات -->
+                <div class="row mt-4">
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h5 class="mb-0">آخرین تولیدات</h5>
+                                <button class="btn btn-sm btn-outline-primary">
+                                    <i class="bi bi-download"></i> خروجی اکسل
+                                </button>
+                            </div>
+                            <div class="card-body">
+                                <div class="table-responsive">
+                                    <table class="table table-hover">
+                                        <thead>
+                                            <tr>
+                                                <th>کد پارچه</th>
+                                                <th>تاریخ تولید</th>
+                                                <th>متراژ</th>
+                                                <th>ماشین</th>
+                                                <th>وزن</th>
+                                                <th>مشتری</th>
+                                                <th>وضعیت</th>
+                                                <th>عملیات</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="recent-fabrics">
+                                            <!-- داده‌ها از طریق JavaScript پر می‌شوند -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- اسکریپت‌ها -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <!-- کتابخانه تاریخ شمسی -->
+    <script src="https://cdn.jsdelivr.net/npm/persian-date@1.1.0/dist/persian-date.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/persian-datepicker@1.2.0/dist/js/persian-datepicker.min.js"></script>
+    
+    <!-- اسکریپت اختصاصی -->
+    <script src="js/app.js"></script>
+    
+    <script>
+        // نمایش تاریخ شمسی
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new persianDate().format('YYYY/MM/DD');
+            document.getElementById('persian-date').textContent = today;
+            
+            // بارگذاری آخرین تولیدات
+            loadRecentFabrics();
+            
+            // مدیریت فرم ثبت سریع
+            document.getElementById('quick-production-form').addEventListener('submit', function(e) {
+                e.preventDefault();
+                submitProductionForm();
+            });
+        });
+        
+        function loadRecentFabrics() {
+            // شبیه‌سازی درخواست AJAX
+            const sampleData = [
+                { code: 'F-1001', date: '1402/11/15', meterage: '45.2', machine: 'M3', weight: '12.5', customer: 'مشتری ۱', status: 'موجود' },
+                { code: 'F-1002', date: '1402/11/15', meterage: '38.7', machine: 'M1', weight: '10.8', customer: 'مشتری ۲', status: 'فروخته شده' },
+                { code: 'F-1003', date: '1402/11/14', meterage: '52.1', machine: 'M2', weight: '14.3', customer: 'مشتری ۳', status: 'موجود' },
+                { code: 'F-1004', date: '1402/11/14', meterage: '29.5', machine: 'M5', weight: '8.2', customer: 'مشتری ۱', status: 'در حال تولید' },
+            ];
+            
+            const tbody = document.getElementById('recent-fabrics');
+            tbody.innerHTML = '';
+            
+            sampleData.forEach(item => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${item.code}</td>
+                    <td>${item.date}</td>
+                    <td>${item.meterage}</td>
+                    <td>${item.machine}</td>
+                    <td>${item.weight}</td>
+                    <td>${item.customer}</td>
+                    <td>
+                        <span class="badge ${getStatusBadge(item.status)}">
+                            ${item.status}
+                        </span>
+                    </td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-info">
+                            <i class="bi bi-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-warning">
+                            <i class="bi bi-pencil"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+        
+        function getStatusBadge(status) {
+            switch(status) {
+                case 'موجود': return 'bg-success';
+                case 'فروخته شده': return 'bg-danger';
+                case 'در حال تولید': return 'bg-warning';
+                default: return 'bg-secondary';
+            }
+        }
+        
+        function submitProductionForm() {
+            const formData = {
+                fabricCode: document.getElementById('fabric-code').value,
+                meterage: document.getElementById('meterage').value,
+                machine: document.getElementById('machine').value,
+                weight: document.getElementById('weight').value,
+                customer: document.getElementById('customer').value
+            };
+            
+            // شبیه‌سازی ارسال به سرور
+            console.log('ثبت تولید:', formData);
+            alert('اطلاعات با موفقیت ثبت شد!');
+            
+            // بازنشانی فرم
+            document.getElementById('quick-production-form').reset();
+            
+            // به‌روزرسانی لیست
+            loadRecentFabrics();
+        }
+    </script>
+</body>
+</html>
+📝 دستورالعمل اجرا:
+مرحله ۱: راه‌اندازی دیتابیس
+
